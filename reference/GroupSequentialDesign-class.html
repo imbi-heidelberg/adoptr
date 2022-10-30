@@ -97,7 +97,8 @@ Any group-sequential design can be converted to a fully flexible
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">GroupSequentialDesign</span><span class="op">(</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S4 method for numeric</span></span>
+<span><span class="fu">GroupSequentialDesign</span><span class="op">(</span></span>
 <span>  <span class="va">n1</span>,</span>
 <span>  <span class="va">c1f</span>,</span>
 <span>  <span class="va">c1e</span>,</span>
@@ -109,7 +110,10 @@ Any group-sequential design can be converted to a fully flexible
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for GroupSequentialDesign</span></span>
-<span><span class="fu"><a href="TwoStageDesign-class.html">TwoStageDesign</a></span><span class="op">(</span><span class="va">n1</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">GroupSequentialDesign</span><span class="op">(</span><span class="va">n1</span>, <span class="va">event_rate</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for GroupSequentialDesign</span></span>
+<span><span class="fu"><a href="TwoStageDesign-class.html">TwoStageDesign</a></span><span class="op">(</span><span class="va">n1</span>, <span class="va">event_rate</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for GroupSequentialDesignSurvival</span></span>
 <span><span class="fu"><a href="TwoStageDesign-class.html">TwoStageDesign</a></span><span class="op">(</span><span class="va">n1</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
@@ -171,6 +175,9 @@ only needs to be specified for time-to-event endpoints.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">design_survival</span> <span class="op">&lt;-</span> <span class="fu">GroupSequentialDesign</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">0</span>, <span class="fl">2</span>, <span class="fl">25</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1.5</span>, <span class="fl">2.5</span><span class="op">)</span>,event_rate<span class="op">=</span><span class="fl">0.7</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">GroupSequentialDesign</span><span class="op">(</span><span class="va">design</span>,<span class="fl">0.8</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> GroupSequentialDesignSurvival&lt;n_events1=25;0.0&lt;=x1&lt;=2.0;n_events2=25&gt; </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="TwoStageDesign-class.html">TwoStageDesign</a></span><span class="op">(</span><span class="va">design</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> TwoStageDesign&lt;n1=25;0.0&lt;=x1&lt;=2.0;n2=25&gt; </span>

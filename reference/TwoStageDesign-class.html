@@ -136,17 +136,13 @@ For available methods, see the 'See Also' section at the end of this page.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for TwoStageDesign</span></span>
-<span><span class="fu">TwoStageDesign</span><span class="op">(</span><span class="va">n1</span>, <span class="va">event_rate</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S4 method for TwoStageDesign</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">object</span>, <span class="va">...</span>, rounded <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>n1</dt>
-<dd><p>stage one sample size or <code>GroupSequentialDesign</code> object to convert
-(overloaded from <code>TwoStageDesign</code>)</p></dd>
+<dd><p>stage-one sample size</p></dd>
 
 
 <dt>...</dt>
@@ -252,16 +248,13 @@ numeric vector, see <code><a href="tunable_parameters.html">tunable_parameters</
 design, see <code><a href="simulate-TwoStageDesign-numeric-method.html">simulate</a></code>;
 for plotting see <code><a href="plot-TwoStageDesign-method.html">plot,TwoStageDesign-method</a></code>.
 Both <a href="GroupSequentialDesign-class.html">group-sequential</a> and
-one-stage designs (!) are implemented as subclasses of
+<a href="OneStageDesign-class.html">one-stage designs</a> (!) are implemented as subclasses of
 <code>TwoStageDesign</code>.</p></div>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">TwoStageDesign</span><span class="op">(</span><span class="va">design</span>,<span class="fl">0.7</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'n1' in selecting a method for function 'TwoStageDesign': object 'design' not found</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">design</span> <span class="op">&lt;-</span> <span class="fu">TwoStageDesign</span><span class="op">(</span><span class="fl">50</span>, <span class="fl">0</span>, <span class="fl">2</span>, <span class="fl">50.0</span>, <span class="fl">2.0</span>, <span class="fl">5</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">design</span> <span class="op">&lt;-</span> <span class="fu">TwoStageDesign</span><span class="op">(</span><span class="fl">50</span>, <span class="fl">0</span>, <span class="fl">2</span>, <span class="fl">50.0</span>, <span class="fl">2.0</span>, <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pow</span>    <span class="op">&lt;-</span> <span class="fu"><a href="ConditionalPower-class.html">Power</a></span><span class="op">(</span><span class="fu"><a href="NormalDataDistribution-class.html">Normal</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="PointMassPrior-class.html">PointMassPrior</a></span><span class="op">(</span><span class="fl">.4</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">design</span>, <span class="st">"Power"</span> <span class="op">=</span> <span class="va">pow</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> TwoStageDesign: n1 =  50</span>

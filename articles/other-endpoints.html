@@ -126,12 +126,93 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/kkmann/adoptr" class="external-link">adoptr</a></span><span class="op">)</span></span></code></pre></div>
-<p>In the simplest cases,</p>
+<p>We use the following notation:</p>
+<ul>
+<li>
+<span class="math inline">\(X_i^T\)</span> denotes the endpoint of recruit <span class="math inline">\(i\)</span> in the treatment arm</li>
+<li>
+<span class="math inline">\(X_i^C\)</span> denotes the endpoint of recruit <span class="math inline">\(i\)</span> in the control arm</li>
+<li>
+<span class="math inline">\(n\)</span> denotes the group-wise sample size</li>
+</ul>
+<p>In the simplest cases, only normal-distributed endpoints are considered and depending on the sample size, either a z-test or a t-test can be conducted. However, a lot of trials require binary endpoints, e.g. when it is only important to know whether a recruit is alive. Of course, binary endpoints are not necessarily connected to deaths in general, so in the following, we only say that an “event happened”.</p>
+<div class="section level2">
+<h2 id="binary-endpoints">Binary endpoints<a class="anchor" aria-label="anchor" href="#binary-endpoints"></a>
+</h2>
+<p>When dealing with binary endpoints, we want to compare the probability of an event in the treatment group <span class="math inline">\(p_T\)</span> with a fixed value (single-arm trial) or with the probability of an event in the control group <span class="math inline">\(p_C\)</span> (two-armed trial). Under the assumption that larger probabilites are favorable, we get the hypotheses:</p>
+<p><span class="math display">\[
+H_0: p_T \leq p_C\quad \text{vs.} \quad H_1:p_C\leq p_T
+\]</span> By the law of large numbers, suitable estimators for these probabilities are given by <span class="math inline">\(\hat{p}_T=\frac{1}{n}\sum_i^{n}X_i^T\)</span>, <span class="math inline">\(\hat{p}_C=\frac{1}{n}\sum_i^{n}X_i^C\)</span> and <span class="math inline">\(\hat{p}_0=\frac{\frac{1}{n}\sum_i^{n}X_i^T+\frac{1}{n}\sum_i^{n}X_i^C}{2n}\)</span>, where <span class="math inline">\(p_0=\frac{p_T+p_C}{2}\)</span> is the pooled rate and <span class="math inline">\(X_i^T \sim Bin(1,p_T), X_i^C\sim Bin(1,p_C)\)</span>.</p>
+<p>The test statistic is then given by <span class="math display">\[
+U=\sqrt{\frac{n}{2}}\frac{\hat{p}_T-\hat{p}_C}{\sqrt{\hat{p}_0(1-\hat{p}_0)}}
+\]</span></p>
+<div class="section level3">
+<h3 id="asymptotic-distribution-of-the-test-statistic">Asymptotic distribution of the test statistic<a class="anchor" aria-label="anchor" href="#asymptotic-distribution-of-the-test-statistic"></a>
+</h3>
+<p>We begin with the difference <span class="math inline">\(\hat{p}_T-\hat{p}_C\)</span>. Using the de Moivre-Laplace theorem, we get that <span class="math display">\[
+\frac{n\hat{p}_T-np_T}{\sqrt{n}} \overset{d}{\to} \mathcal{N}(0,p_T(1-p_T)).
+\]</span> After defining <span class="math inline">\(\sigma_A^2=p_T(1-p_T)+p_C(1-p_C)\)</span>, we obtain <span class="math display">\[
+\frac{n\hat{p}_T-np_T}{\sqrt{n}}-\frac{n\hat{p}_C-np_C}{\sqrt{n}}=\sqrt{n}(\hat{p}_T-\hat{p}_C-(p_T-p_C))\overset{d}{\to}\mathcal{N}(0,\sigma_A^2),
+\]</span> so it follows <span class="math display">\[
+\sqrt{n}(\hat{p}_T-\hat{p}_C)\overset{d}{\to}\mathcal{N}(\sqrt{n}(p_T-p_c),\sigma_A^2).
+\]</span> Applying the continuous mapping theorem, it results that <span class="math inline">\(\hat{\sigma}_0:=\sqrt{2\hat{p}_0(1-\hat{p}_0)} \overset{P}{\to}\sqrt{2p_0(1-p_0)}:=\sigma_0\)</span>, so by Slutzky’s theorem, we get <span class="math display">\[
+\frac{\sqrt{n}(\hat{p}_T-\hat{p}_C)}{\sigma_0}=\sqrt{\frac{n}{2}}\frac{\hat{p}_T-\hat{p}_C}{\sqrt{\hat{p}_0(1-\hat{p}_0)}}\overset{d}{\to}\mathcal{N}(\sqrt{n}\frac{p_T-p_C}{\sigma_0},\frac{\sigma_A^2}{\sigma_0^2}).
+\]</span> Hence, the following statement approximately holds: <span class="math display">\[
+U \sim \mathcal{N}(\sqrt{n}\frac{p_T-p_C}{\sigma_0},\frac{\sigma_A^2}{\sigma_0^2}).
+\]</span></p>
+<p>Note that under the null hypothesis, <span class="math inline">\(\sigma_A^2=\sigma_0^2\)</span> and <span class="math inline">\(p_T=p_C\)</span>. Thus, <span class="math inline">\(U\sim \mathcal{N}(0,1)\)</span> under <span class="math inline">\(H_0\)</span>.</p>
+</div>
+<div class="section level3">
+<h3 id="adoptr-and-binomial-endpoints">
+<strong>adoptr</strong> and binomial endpoints<a class="anchor" aria-label="anchor" href="#adoptr-and-binomial-endpoints"></a>
+</h3>
+<div class="section level4">
+<h4 id="implementation-details">Implementation details<a class="anchor" aria-label="anchor" href="#implementation-details"></a>
+</h4>
+<p>Due to the fact that the test statistic <span class="math inline">\(U\)</span> explicitly depends on the outcome of <span class="math inline">\(p_T\)</span> and <span class="math inline">\(p_C\)</span> and not only their difference <span class="math inline">\(\theta=p_T-p_C\)</span>, it is necessary to fix the rate in the control group <span class="math inline">\(p_C\)</span>. Thus, by knowing <span class="math inline">\(\theta\)</span>, <strong>adoptr</strong> implicitly computes <span class="math inline">\(p_T=p_C+\theta\)</span>. Unfortunately, this means that <span class="math inline">\(p_C\)</span> is the same under the null as well as the alternative. This aspect could lead to limitations, but if the control group is assumed to be a placebo group, it makes sense to assume that <span class="math inline">\(p_C\)</span> is constant under <span class="math inline">\(H_0\)</span> and <span class="math inline">\(H_1\)</span>.</p>
+</div>
+<div class="section level4">
+<h4 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h4>
+<p>Let <span class="math inline">\(p_C=0.3\)</span> be fixed. Furthermore, we assume to have two-armed trial.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">datadist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BinomialDataDistribution-class.html">Binomial</a></span><span class="op">(</span><span class="fl">0.3</span>, two_armed <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>Let us furthermore assume that the we have a continuous prior on <span class="math inline">\(\theta \sim \mathbb{1}_{(-0.29,0.69)}\mathcal{N}(0.2,0.2)\)</span>. It is necessary to use the indicator function to ensure that <span class="math inline">\(p_T \in (0,1)\)</span>.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">H_0</span>        <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PointMassPrior-class.html">PointMassPrior</a></span><span class="op">(</span><span class="fl">.0</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">prior</span>      <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ContinuousPrior-class.html">ContinuousPrior</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fl">1</span><span class="op">/</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">pnorm</a></span><span class="op">(</span><span class="fl">0.69</span>,<span class="fl">0.2</span>,<span class="fl">0.2</span><span class="op">)</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">pnorm</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.29</span>,<span class="fl">0.2</span>,<span class="fl">0.2</span><span class="op">)</span><span class="op">)</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">0.2</span>,<span class="fl">0.2</span><span class="op">)</span>,</span>
+<span>                              support <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.29</span>,<span class="fl">0.69</span><span class="op">)</span>,</span>
+<span>                              tighten_support <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>We require a maximal type one error of <span class="math inline">\(\alpha\leq 0.025\)</span> and a minimum expected power of <span class="math inline">\(\mathbb{E}[1-\beta]\geq 0.8\)</span>.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">alpha</span>      <span class="op">&lt;-</span> <span class="fl">0.025</span></span>
+<span><span class="va">min_epower</span> <span class="op">&lt;-</span> <span class="fl">0.8</span></span>
+<span><span class="va">toer_cnstr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ConditionalPower-class.html">Power</a></span><span class="op">(</span><span class="va">datadist</span>, <span class="va">H_0</span><span class="op">)</span> <span class="op">&lt;=</span> <span class="va">alpha</span></span>
+<span><span class="va">epow_cnstr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ConditionalPower-class.html">Power</a></span><span class="op">(</span><span class="va">datadist</span>, <span class="fu"><a href="../reference/condition.html">condition</a></span><span class="op">(</span><span class="va">prior</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.0</span>,<span class="fl">0.69</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="va">min_epower</span></span></code></pre></div>
+<p>We choose our design parameters such that the expected sample size is minimized. In order to find an initial design, we use the in-built function \texttt{get_initial_design}.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ess</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ConditionalSampleSize-class.html">ExpectedSampleSize</a></span><span class="op">(</span><span class="va">datadist</span>,<span class="va">prior</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">init</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_initial_design.html">get_initial_design</a></span><span class="op">(</span><span class="fl">0.2</span>,<span class="fl">0.025</span>,<span class="fl">0.2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">opt_design</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/minimize.html">minimize</a></span><span class="op">(</span><span class="va">ess</span>,<span class="fu"><a href="../reference/subject_to.html">subject_to</a></span><span class="op">(</span><span class="va">toer_cnstr</span>,<span class="va">epow_cnstr</span><span class="op">)</span>,initial_design <span class="op">=</span> <span class="va">init</span>, check_constraints <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">opt_design</span><span class="op">$</span><span class="va">design</span><span class="op">)</span></span></code></pre></div>
+<p><img src="other-endpoints_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
+</div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="time-to-event-endpoints">Time-to-event endpoints<a class="anchor" aria-label="anchor" href="#time-to-event-endpoints"></a>
+</h2>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-      </div>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
+</div>
 
 </div>
 

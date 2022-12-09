@@ -207,6 +207,14 @@ U \sim \mathcal{N}(\sqrt{n}\frac{p_T-p_C}{\sigma_0},\frac{\sigma_A^2}{\sigma_0^2
 <div class="section level2">
 <h2 id="time-to-event-endpoints">Time-to-event endpoints<a class="anchor" aria-label="anchor" href="#time-to-event-endpoints"></a>
 </h2>
+<p>Another quite common endpoint are so called time-to-event endpoints occurring in survival analysis. In the following, let <span class="math inline">\(\theta := \frac{\lambda_C(t)}{\lambda_T(t)}\)</span> be the ratio of the hazard functions in either group. We assume that <span class="math inline">\(\theta\)</span> is constant. Assuming that a lower hazard function is favorable, the resulting hypotheses are</p>
+<p><span class="math display">\[
+H_0: \theta\leq 1 \quad \text{vs.} \quad H_1: \theta &gt;1.
+\]</span></p>
+<p>Let <span class="math inline">\(1,\dots,J\)</span> be the distinct times of observed events in either group and let <span class="math inline">\(n_{T,j}, n_{C,j}\)</span> be the number of subjects, who neither had an event nor have been censored. Additionally, <span class="math inline">\(O_{T,j},O_{C,j}\)</span> are the observed number of events at time <span class="math inline">\(j\)</span>. Define <span class="math inline">\(n_j:=n_{T,j}+n_{C,j}\)</span> and <span class="math inline">\(O_j:= O_{T,j}+O_{C,j}\)</span>. Under the null, the hazard functions of the groups are equal. Thus, for <span class="math inline">\(i \in \{T,C\}\)</span>, <span class="math inline">\(O_{j}\)</span> can be regarded as the number of events in a draw of size <span class="math inline">\(n_{i,j}\)</span>, where the population has size <span class="math inline">\(n_j\)</span>. This is exactly the definition of the hypergeometric distribution, so we know that <span class="math inline">\(O_{i,j}\sim h(n_j,O_j,n_{i,j})\)</span>. This distribution has an expected value of <span class="math inline">\(E_{i,j}:=\mathbb{E}[O_{i,j}]=n_{i,j}\frac{O_j}{n_j}\)</span> and variance <span class="math inline">\(V_{i,j}:=\text{Var}(O_{i,j})=E_{i,j}(\frac{n_j-O_j}{n_j})(\frac{n_j-n_{i,j}}{n_j-1})\)</span>. The log-rank test statistic is given by</p>
+<p><span class="math display">\[
+L_T:=\frac{\sum_{j=1}^J O_{T,j}-E_{T,j}}{\sqrt{\sum_{j=1}^J V_{T,j}}}
+\]</span> Note that <span class="math inline">\(L_T=L_C\)</span>, so it does not matter which statistic to use.</p>
 </div>
   </div>
 

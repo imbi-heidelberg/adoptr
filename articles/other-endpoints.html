@@ -213,8 +213,33 @@ H_0: \theta\leq 1 \quad \text{vs.} \quad H_1: \theta &gt;1.
 \]</span></p>
 <p>Let <span class="math inline">\(1,\dots,J\)</span> be the distinct times of observed events in either group and let <span class="math inline">\(n_{T,j}, n_{C,j}\)</span> be the number of subjects, who neither had an event nor have been censored. Additionally, <span class="math inline">\(O_{T,j},O_{C,j}\)</span> are the observed number of events at time <span class="math inline">\(j\)</span>. Define <span class="math inline">\(n_j:=n_{T,j}+n_{C,j}\)</span> and <span class="math inline">\(O_j:= O_{T,j}+O_{C,j}\)</span>. Under the null, the hazard functions of the groups are equal. Thus, for <span class="math inline">\(i \in \{T,C\}\)</span>, <span class="math inline">\(O_{j}\)</span> can be regarded as the number of events in a draw of size <span class="math inline">\(n_{i,j}\)</span>, where the population has size <span class="math inline">\(n_j\)</span>. This is exactly the definition of the hypergeometric distribution, so we know that <span class="math inline">\(O_{i,j}\sim h(n_j,O_j,n_{i,j})\)</span>. This distribution has an expected value of <span class="math inline">\(E_{i,j}:=\mathbb{E}[O_{i,j}]=n_{i,j}\frac{O_j}{n_j}\)</span> and variance <span class="math inline">\(V_{i,j}:=\text{Var}(O_{i,j})=E_{i,j}(\frac{n_j-O_j}{n_j})(\frac{n_j-n_{i,j}}{n_j-1})\)</span>. The log-rank test statistic is given by</p>
 <p><span class="math display">\[
-L_T:=\frac{\sum_{j=1}^J O_{T,j}-E_{T,j}}{\sqrt{\sum_{j=1}^J V_{T,j}}}
-\]</span> Note that <span class="math inline">\(L_T=L_C\)</span>, so it does not matter which statistic to use.</p>
+L=L_T:=\frac{\sum_{j=1}^J O_{T,j}-E_{T,j}}{\sqrt{\sum_{j=1}^J V_{T,j}}}
+\]</span> Note that it does not matter whether we consider <span class="math inline">\(L_T\)</span> or <span class="math inline">\(L_C\)</span>, both of them yield the same results, so we abbreviate <span class="math inline">\(L_T\)</span> to <span class="math inline">\(L\)</span>. By the central limit theorem, it is easy to see that <span class="math inline">\(L \overset{d}{\to} \mathcal{N}(0,1)\)</span>. Under the alternative, it can be shown that <span class="math inline">\(L \sim \mathcal{N}(\text{log}(\theta)\frac{1}{2}\sqrt{n_E},1)\)</span> approximately, where <span class="math inline">\(n_E\)</span> is the number of events in either group. If <span class="math inline">\(d\)</span> is the combined probability of events (also known as event rate) in both arms, <span class="math inline">\(n_E\)</span> can be replaced by <span class="math inline">\(2nd\)</span> (where <span class="math inline">\(n\)</span> is, like in the whole chapter, the number of recruits per group). Thus, by estimating <span class="math inline">\(d\)</span> via a suitable estimator <span class="math inline">\(\hat{d}\)</span>, we get an estimation of the total number of recruits for the study. In <strong>adoptr</strong>, the parameter <span class="math inline">\(d\)</span> needs to be pre-specified in order to obtain a one-parametric distribution (the other parameter is <span class="math inline">\(\theta\)</span>), so <span class="math inline">\(d\)</span> is assumed to be fixed during the trial. This is similar to the case of binary endpoints, where the response rate in the control group <span class="math inline">\(r_C\)</span> had to be a constant value. Since the number of events is the main interest during a survival study, the need of a constant <span class="math inline">\(d\)</span> is not a strong limitation.</p>
+<div class="section level3">
+<h3 id="survival-analysis-and-adapitve-designs">Survival analysis and adapitve designs<a class="anchor" aria-label="anchor" href="#survival-analysis-and-adapitve-designs"></a>
+</h3>
+<div class="section level4">
+<h4 id="notation">Notation<a class="anchor" aria-label="anchor" href="#notation"></a>
+</h4>
+<p>We expand the previous notation by an index <span class="math inline">\(k\in \{1,2\}\)</span>, denoting the current stage. We observe <span class="math inline">\(J_1\)</span> events until the interim analysis, and we observe <span class="math inline">\(J_2\)</span> events until the final analysis. Note that <span class="math inline">\(J_2\)</span> is meant to be cumulative. Furthermore, let <span class="math inline">\(O_{i,j,k}\)</span> be the number of observed events in arm <span class="math inline">\(i\in \{T,C\}\)</span> at time <span class="math inline">\(j \in \{1,\dots,J_k\}\)</span> in stage <span class="math inline">\(k \in \{1,2\}\)</span>. Like in the previous section, let, <span class="math inline">\(E_{i,j,k}= \mathbb{E}[O_{i,j,k}]=n_{i,j,k}\frac{O_{j,k}}{n_{j,k}}\)</span>, where <span class="math inline">\(n_{i,j,k}\)</span> is the number of patients that have not had an event until the end of stage <span class="math inline">\(k\)</span>, <span class="math inline">\(O_{j,k}=O_{T,j,k}+O_{C,j,k}\)</span> and <span class="math inline">\(n_{j,k}=n_{T,j,k}+n_{C,j,k}\)</span>. In the same way, we can define <span class="math inline">\(V_{i,j,k}\)</span> like in the previous section. In this setting, we now have two test statistics <span class="math inline">\(L_k\)</span>, <span class="math inline">\(k \in \{1,2\}\)</span>, that can be calculated the same way like described above:</p>
+<p><span class="math display">\[
+L_k=\frac{\sum_{j=1}^{J_k} O_{T,j,k}-E_{T,j,k}}{\sqrt{\sum_{j=1}^{J_k} V_{T,j,k}}}
+\]</span></p>
+</div>
+<div class="section level4">
+<h4 id="over-running-and-solutions">Over-running and solutions<a class="anchor" aria-label="anchor" href="#over-running-and-solutions"></a>
+</h4>
+<p>In survival analysis, it is usual to have a certain follow-up time after the accrual period in order to evaluate the number of events and when they occurred. Thus, when conducting the interim analysis in an adaptive design, some patients may not have had an event yet, even though those could lead to an opposite decision than the patients available at interim do. This issue is known as “over-running”. Additionally, these recruits that have not had an event till the interim analysis provide information for both stages: in the first stage, we know that these subjects survived, and in the second stage, they may die (or even survive until the end of the trial). Thus, the test statistics <span class="math inline">\(L_{T,1}\)</span> from the interim analysis and <span class="math inline">\(L_{T,2}\)</span> from the final analysis are not independent, even though this is an important assumption in <strong>adoptr</strong> in order to calculate optimal designs.</p>
+<div class="section level5">
+<h5 id="solution-1-independent-increments">Solution 1: Independent Increments<a class="anchor" aria-label="anchor" href="#solution-1-independent-increments"></a>
+</h5>
+<p>It is easy to verify that</p>
+<p><span class="math display">\[
+Z_2:= \frac{\sqrt{J_2}L_2-\sqrt{J_1}L_1}{\sqrt{J_2-J_1}}
+\]</span> is still approximately standard normal under the null.</p>
+</div>
+</div>
+</div>
 </div>
   </div>
 
@@ -235,7 +260,7 @@ L_T:=\frac{\sum_{j=1}^J O_{T,j}-E_{T,j}}{\sqrt{\sum_{j=1}^J V_{T,j}}}
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

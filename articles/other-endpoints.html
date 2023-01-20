@@ -124,30 +124,30 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/kkmann/adoptr" class="external-link">adoptr</a></span><span class="op">)</span></span></code></pre></div>
-<p>We use the following notation:</p>
+<p>Currently, <code>adoptr</code> supports the optimization of adaptive two-stage designs with either normally or t-distributed test statistics. More specifically, it is required that the first stage test statistic, and the distribution of the second stage test-statistic conditional on the first-stage test statistic, is either normal or t-distributed.</p>
+<p>When individual observations are normally distributed, stage-wise Z- or T-test statistics fulfill these criteria. In practice, however, there are many situations where one cannot reasonably assume that individual observations are sampled from a normal distribution. It is common for trials to be conducted for binary or time-to-event endpoints, e.g. if one is interested in investigating the impact of a drug on mortality. One way to deal with this situation is by transforming the data to a test-statistic which is approximately. In the following, we will explain how to do so for binary and for time-to-event endpoints.</p>
+<p>We will be using the following notation:</p>
 <ul>
 <li>
-<span class="math inline">\(X_i^T\)</span> denotes the endpoint of recruit <span class="math inline">\(i\)</span> in the treatment arm</li>
+<span class="math inline">\(X_i^T\)</span> will denote an observation of recruit <span class="math inline">\(i\)</span> in the treatment arm</li>
 <li>
-<span class="math inline">\(X_i^C\)</span> denotes the endpoint of recruit <span class="math inline">\(i\)</span> in the control arm</li>
+<span class="math inline">\(X_i^C\)</span> will denotes the observation of recruit <span class="math inline">\(i\)</span> in the control arm</li>
 <li>
-<span class="math inline">\(n\)</span> denotes the group-wise sample size</li>
+<span class="math inline">\(n\)</span> will denote the group-wise sample size.</li>
 </ul>
-<p>In the simplest cases, only normal-distributed endpoints are considered and depending on the sample size, either a z-test or a t-test can be conducted. However, a lot of trials require binary or time-to-event endpoints, e.g. when it is only important to know whether a recruit is alive or how long a patient lived. Of course, binary endpoints or time-to-event data are not necessarily connected to deaths in general, so in the following, we only say that an “event occurred”.</p>
 <div class="section level2">
 <h2 id="binary-endpoints">Binary endpoints<a class="anchor" aria-label="anchor" href="#binary-endpoints"></a>
 </h2>
-<p>When dealing with binary endpoints, we know that the endpoints follow a Bernoulli distribution, so <span class="math inline">\(X_i^T \sim Bin(1,p_T)\)</span> and <span class="math inline">\(X_i^C\sim Bin(1,p_C)\)</span>. We now want to compare the probability of an event in the treatment group <span class="math inline">\(p_T\)</span> with a fixed value (single-arm trial) or with the probability of an event in the control group <span class="math inline">\(p_C\)</span> (two-armed trial). Thus, assuming that larger probabilities are favorable, we have</p>
+<p>Binary endpoints are endpoints where individual observations follow a Bernoulli distribution, i.e. <span class="math inline">\(X_i^T \sim Bin(1,p_T)\)</span> and <span class="math inline">\(X_i^C\sim Bin(1,p_C)\)</span>. Our goal is to compare the probability <span class="math inline">\(p_T\)</span> of an event in the treatment group with a fixed value (single-arm trial) or with the probability <span class="math inline">\(p_C\)</span> of an event in the control group (two-armed trial). Thus, assuming that larger probabilities are favorable, we have</p>
 <p><span class="math display">\[
-H_0: p_T \leq p_C\quad \text{vs.} \quad H_1:p_C\leq p_T.
+H_0: p_T \leq p_C\quad \text{vs.} \quad H_1:p_T &gt; p_C.
 \]</span></p>
-<p>We want to have a test statistic that asymptotically follows a normal distribution, so we use <span class="math display">\[
+<p>To test this hypothesis, one could use the test statistic <span class="math display">\[
 U=\sqrt{\frac{n}{2}}\frac{\hat{p}_T-\hat{p}_C}{\sqrt{\hat{p}_0(1-\hat{p}_0)}},
 \]</span></p>
-<p>where <span class="math inline">\(\hat{p}_T=\frac{1}{n}\sum_i^{n}X_i^T\)</span>, <span class="math inline">\(\hat{p}_C=\frac{1}{n}\sum_i^{n}X_i^C\)</span> are estimators for <span class="math inline">\(p_T\)</span> and <span class="math inline">\(p_C\)</span>. Furthermore, <span class="math inline">\(\hat{p}_0=\frac{\frac{1}{n}\sum_i^{n}X_i^T+\frac{1}{n}\sum_i^{n}X_i^C}{2n}\)</span> is the estimator for the pooled rate <span class="math inline">\(p_0=\frac{p_T+p_C}{2}\)</span>.</p>
+<p>where <span class="math inline">\(\hat{p}_T=\frac{1}{n}\sum_i^{n}X_i^T\)</span> and <span class="math inline">\(\hat{p}_C=\frac{1}{n}\sum_i^{n}X_i^C\)</span> are the maximum likelihood estimators of <span class="math inline">\(p_T\)</span> and <span class="math inline">\(p_C\)</span> and where <span class="math inline">\(\hat{p}_0=\frac{\frac{1}{n}\sum_i^{n}X_i^T+\frac{1}{n}\sum_i^{n}X_i^C}{2n}\)</span>.</p>
 <p>The outcome of <span class="math inline">\(U\)</span> is then compared to <span class="math inline">\(c_f\)</span> and <span class="math inline">\(c_e\)</span>, the first stage boundaries. If <span class="math inline">\(U\in [c_f,c_e]\)</span>, we continue the trial and compute a new value for <span class="math inline">\(U_2\)</span> in the second stage, where we reject the null if <span class="math inline">\(U_2&gt;c_2\)</span>.</p>
+<p>It is a well-known that this test statistic is asymptotically normal, and we will give a proof of this in the next section.</p>
 <div class="section level3">
 <h3 id="asymptotic-distribution-of-the-test-statistic">Asymptotic distribution of the test statistic<a class="anchor" aria-label="anchor" href="#asymptotic-distribution-of-the-test-statistic"></a>
 </h3>
@@ -158,11 +158,9 @@ U=\sqrt{\frac{n}{2}}\frac{\hat{p}_T-\hat{p}_C}{\sqrt{\hat{p}_0(1-\hat{p}_0)}},
 \]</span> so it follows <span class="math display">\[
 \sqrt{n}(\hat{p}_T-\hat{p}_C)\overset{d}{\to}\mathcal{N}(\sqrt{n}(p_T-p_c),\sigma_A^2).
 \]</span> Applying the continuous mapping theorem, it results that <span class="math inline">\(\hat{\sigma}_0:=\sqrt{2\hat{p}_0(1-\hat{p}_0)} \overset{P}{\to}\sqrt{2p_0(1-p_0)}:=\sigma_0\)</span>, so by Slutzky’s theorem, we get <span class="math display">\[
-\frac{\sqrt{n}(\hat{p}_T-\hat{p}_C)}{\sigma_0}=\sqrt{\frac{n}{2}}\frac{\hat{p}_T-\hat{p}_C}{\sqrt{\hat{p}_0(1-\hat{p}_0)}}\overset{d}{\to}\mathcal{N}(\sqrt{n}\frac{p_T-p_C}{\sigma_0},\frac{\sigma_A^2}{\sigma_0^2}).
-\]</span> Hence, the following statement approximately holds: <span class="math display">\[
-U \sim \mathcal{N}(\sqrt{n}\frac{p_T-p_C}{\sigma_0},\frac{\sigma_A^2}{\sigma_0^2}).
-\]</span></p>
-<p>Note that under the null hypothesis, <span class="math inline">\(\sigma_A^2=\sigma_0^2\)</span> and <span class="math inline">\(p_T=p_C\)</span>. Thus, <span class="math inline">\(U\sim \mathcal{N}(0,1)\)</span> under <span class="math inline">\(H_0\)</span>.</p>
+\frac{\sqrt{n}(\hat{p}_T-\hat{p}_C)}{\sigma_0}=\sqrt{\frac{n}{2}}\frac{\hat{p}_T-\hat{p}_C}{\sqrt{\hat{p}_0(1-\hat{p}_0)}}\overset{d}{\to}\mathcal{N}\left(\sqrt{n}\frac{p_T-p_C}{\sigma_0},\frac{\sigma_A^2}{\sigma_0^2}\right).
+\]</span> Hence, for sufficiently large <span class="math inline">\(n\)</span>, <span class="math inline">\(U\)</span> is approximately normal.</p>
+<p>Note that under the null hypothesis, <span class="math inline">\(\sigma_A^2=\sigma_0^2\)</span> and <span class="math inline">\(p_T=p_C\)</span>. Thus, approximately, <span class="math inline">\(U\sim \mathcal{N}(0,1)\)</span> under <span class="math inline">\(H_0\)</span>.</p>
 </div>
 <div class="section level3">
 <h3 id="adoptr-and-binomial-endpoints">
@@ -177,22 +175,22 @@ U \sim \mathcal{N}(\sqrt{n}\frac{p_T-p_C}{\sigma_0},\frac{\sigma_A^2}{\sigma_0^2
 <h4 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h4>
 <p>Let <span class="math inline">\(p_C=0.3\)</span> be fixed. Furthermore, we assume to have two-armed trial.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">datadist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BinomialDataDistribution-class.html">Binomial</a></span><span class="op">(</span><span class="fl">0.3</span>, two_armed <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>Let us furthermore assume that the we have a normal prior on <span class="math inline">\(\theta\)</span> with expectation <span class="math inline">\(\mu=0.2\)</span> and standard deviation <span class="math inline">\(\sigma=0.2\)</span>, which was truncated to the interval <span class="math inline">\((-.029,0.69)\)</span>. It is necessary to use a truncation to ensure that <span class="math inline">\(p_T \in (0,1)\)</span>.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">H_0</span>        <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PointMassPrior-class.html">PointMassPrior</a></span><span class="op">(</span><span class="fl">.0</span>, <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">prior</span>      <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ContinuousPrior-class.html">ContinuousPrior</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fl">1</span><span class="op">/</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">pnorm</a></span><span class="op">(</span><span class="fl">0.69</span>,<span class="fl">0.2</span>,<span class="fl">0.2</span><span class="op">)</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">pnorm</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.29</span>,<span class="fl">0.2</span>,<span class="fl">0.2</span><span class="op">)</span><span class="op">)</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">0.2</span>,<span class="fl">0.2</span><span class="op">)</span>,</span>
 <span>                              support <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.29</span>,<span class="fl">0.69</span><span class="op">)</span>,</span>
 <span>                              tighten_support <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>We require a maximal type one error of <span class="math inline">\(\alpha\leq 0.025\)</span> and a minimum expected power of <span class="math inline">\(\mathbb{E}[1-\beta]\geq 0.8\)</span>.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">alpha</span>      <span class="op">&lt;-</span> <span class="fl">0.025</span></span>
 <span><span class="va">min_epower</span> <span class="op">&lt;-</span> <span class="fl">0.8</span></span>
 <span><span class="va">toer_cnstr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ConditionalPower-class.html">Power</a></span><span class="op">(</span><span class="va">datadist</span>, <span class="va">H_0</span><span class="op">)</span> <span class="op">&lt;=</span> <span class="va">alpha</span></span>
 <span><span class="va">epow_cnstr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ConditionalPower-class.html">Power</a></span><span class="op">(</span><span class="va">datadist</span>, <span class="fu"><a href="../reference/condition.html">condition</a></span><span class="op">(</span><span class="va">prior</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.0</span>,<span class="fl">0.69</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="va">min_epower</span></span></code></pre></div>
 <p>We choose our design parameters such that the expected sample size is minimized. In order to find an initial design, we use the in-built function \texttt{get_initial_design}.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ess</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ConditionalSampleSize-class.html">ExpectedSampleSize</a></span><span class="op">(</span><span class="va">datadist</span>,<span class="va">prior</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">init</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_initial_design.html">get_initial_design</a></span><span class="op">(</span><span class="fl">0.2</span>,<span class="fl">0.025</span>,<span class="fl">0.2</span><span class="op">)</span></span>
@@ -242,36 +240,36 @@ Z_2:= \frac{\sqrt{J_2}L_2-\sqrt{J_1}L_1}{\sqrt{J_2-J_1}}
 <h5 id="example-1">Example<a class="anchor" aria-label="anchor" href="#example-1"></a>
 </h5>
 <p>Assume, we estimate an event rate of <span class="math inline">\(\hat{d}=0.7\)</span>. We assume to have a two-armed design.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">datadist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SurvivalDataDistribution-class.html">Survival</a></span><span class="op">(</span><span class="fl">0.7</span>,two_armed <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>As <span class="math inline">\(\theta\)</span> denotes the hazard ratio, we have <span class="math inline">\(\theta=1\)</span> under the null. Under the alternative, we assume to have <span class="math inline">\(\theta=1.7\)</span> without a prior distribution.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">H_0</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PointMassPrior-class.html">PointMassPrior</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">H_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PointMassPrior-class.html">PointMassPrior</a></span><span class="op">(</span><span class="fl">1.7</span>,<span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p>Our desired design should have a maximal type I error <span class="math inline">\(\alpha\leq 0.025\)</span> and a minimum power of <span class="math inline">\((1-\beta)\geq 0.8\)</span>.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">alpha</span> <span class="op">&lt;-</span> <span class="fl">0.025</span></span>
 <span><span class="va">min_power</span> <span class="op">&lt;-</span> <span class="fl">0.8</span></span>
 <span><span class="va">toer_con</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ConditionalPower-class.html">Power</a></span><span class="op">(</span><span class="va">datadist</span>,<span class="va">H_0</span><span class="op">)</span><span class="op">&lt;=</span><span class="va">alpha</span></span>
 <span><span class="va">pow_con</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ConditionalPower-class.html">Power</a></span><span class="op">(</span><span class="va">datadist</span>,<span class="va">H_1</span><span class="op">)</span><span class="op">&gt;=</span><span class="va">min_power</span></span></code></pre></div>
 <p>Our optimized design should minimize the number of required events.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>exp_no_events &lt;-<span class="st"> </span><span class="kw">ExpectedSampleSize</span>(datadist,H_<span class="dv">1</span>)</span>
-<span id="cb9-2"><a href="#cb9-2"></a>init &lt;-<span class="st"> </span><span class="kw">get_initial_design</span>(<span class="fl">1.7</span>,<span class="fl">0.025</span>,<span class="fl">0.2</span>,<span class="dt">dist=</span>datadist)</span>
-<span id="cb9-3"><a href="#cb9-3"></a>opt_survival &lt;-<span class="st"> </span><span class="kw">minimize</span>(exp_no_events,<span class="kw">subject_to</span>(toer_con,pow_con),<span class="dt">initial_design =</span> init,<span class="dt">check_constraints=</span><span class="ot">TRUE</span>)</span>
-<span id="cb9-4"><a href="#cb9-4"></a></span>
-<span id="cb9-5"><a href="#cb9-5"></a><span class="kw">summary</span>(opt_survival<span class="op">$</span>design)</span>
-<span id="cb9-6"><a href="#cb9-6"></a><span class="co">#&gt; TwoStageDesignSurvival: nevs1= 32 --&gt; nrec1= 46</span></span>
-<span id="cb9-7"><a href="#cb9-7"></a><span class="co">#&gt; </span></span>
-<span id="cb9-8"><a href="#cb9-8"></a>          futility <span class="op">|</span><span class="st">                  </span>continue                 <span class="op">|</span><span class="st"> </span>efficacy</span>
-<span id="cb9-9"><a href="#cb9-9"></a><span class="co">#&gt; </span></span>
-<span id="cb9-10"><a href="#cb9-10"></a>      x1<span class="op">:</span><span class="st">     </span><span class="fl">0.79</span> <span class="op">|</span><span class="st">  </span><span class="fl">0.83</span>  <span class="fl">0.98</span>  <span class="fl">1.24</span>  <span class="fl">1.54</span>  <span class="fl">1.85</span>  <span class="fl">2.10</span>  <span class="fl">2.25</span> <span class="op">|</span><span class="st">  </span><span class="fl">2.29</span></span>
-<span id="cb9-11"><a href="#cb9-11"></a><span class="co">#&gt; </span></span>
-<span id="cb9-12"><a href="#cb9-12"></a>  <span class="kw">c2</span>(x1)<span class="op">:</span><span class="st">     </span><span class="op">+</span><span class="ot">Inf</span> <span class="op">|</span><span class="st"> </span><span class="fl">+2.17</span> <span class="fl">+2.02</span> <span class="fl">+1.77</span> <span class="fl">+1.43</span> <span class="fl">+1.00</span> <span class="fl">+0.52</span> <span class="fl">+0.07</span> <span class="op">|</span><span class="st">  </span><span class="op">-</span><span class="ot">Inf</span></span>
-<span id="cb9-13"><a href="#cb9-13"></a><span class="co">#&gt; </span></span>
-<span id="cb9-14"><a href="#cb9-14"></a>  <span class="kw">nevs2</span>(x1)<span class="op">:</span><span class="st">     </span><span class="dv">0</span> <span class="op">|</span><span class="st">    </span><span class="dv">45</span>    <span class="dv">42</span>    <span class="dv">38</span>    <span class="dv">32</span>    <span class="dv">24</span>    <span class="dv">17</span>    <span class="dv">12</span> <span class="op">|</span><span class="st">     </span><span class="dv">0</span></span>
-<span id="cb9-15"><a href="#cb9-15"></a><span class="co">#&gt; </span></span>
-<span id="cb9-16"><a href="#cb9-16"></a>  <span class="kw">nrec2</span>(x1)<span class="op">:</span><span class="st">     </span><span class="dv">0</span> <span class="op">|</span><span class="st">    </span><span class="dv">64</span>    <span class="dv">60</span>    <span class="dv">54</span>    <span class="dv">45</span>    <span class="dv">35</span>    <span class="dv">25</span>    <span class="dv">17</span> <span class="op">|</span><span class="st">     </span><span class="dv">0</span></span>
-<span id="cb9-17"><a href="#cb9-17"></a><span class="co">#&gt; </span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>exp_no_events &lt;-<span class="st"> </span><span class="kw">ExpectedSampleSize</span>(datadist,H_<span class="dv">1</span>)</span>
+<span id="cb8-2"><a href="#cb8-2"></a>init &lt;-<span class="st"> </span><span class="kw">get_initial_design</span>(<span class="fl">1.7</span>,<span class="fl">0.025</span>,<span class="fl">0.2</span>,<span class="dt">dist=</span>datadist)</span>
+<span id="cb8-3"><a href="#cb8-3"></a>opt_survival &lt;-<span class="st"> </span><span class="kw">minimize</span>(exp_no_events,<span class="kw">subject_to</span>(toer_con,pow_con),<span class="dt">initial_design =</span> init,<span class="dt">check_constraints=</span><span class="ot">TRUE</span>)</span>
+<span id="cb8-4"><a href="#cb8-4"></a></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="kw">summary</span>(opt_survival<span class="op">$</span>design)</span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="co">#&gt; TwoStageDesignSurvival: nevs1= 32 --&gt; nrec1= 46</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="co">#&gt; </span></span>
+<span id="cb8-8"><a href="#cb8-8"></a>          futility <span class="op">|</span><span class="st">                  </span>continue                 <span class="op">|</span><span class="st"> </span>efficacy</span>
+<span id="cb8-9"><a href="#cb8-9"></a><span class="co">#&gt; </span></span>
+<span id="cb8-10"><a href="#cb8-10"></a>      x1<span class="op">:</span><span class="st">     </span><span class="fl">0.79</span> <span class="op">|</span><span class="st">  </span><span class="fl">0.83</span>  <span class="fl">0.98</span>  <span class="fl">1.24</span>  <span class="fl">1.54</span>  <span class="fl">1.85</span>  <span class="fl">2.10</span>  <span class="fl">2.25</span> <span class="op">|</span><span class="st">  </span><span class="fl">2.29</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a><span class="co">#&gt; </span></span>
+<span id="cb8-12"><a href="#cb8-12"></a>  <span class="kw">c2</span>(x1)<span class="op">:</span><span class="st">     </span><span class="op">+</span><span class="ot">Inf</span> <span class="op">|</span><span class="st"> </span><span class="fl">+2.17</span> <span class="fl">+2.02</span> <span class="fl">+1.77</span> <span class="fl">+1.43</span> <span class="fl">+1.00</span> <span class="fl">+0.52</span> <span class="fl">+0.07</span> <span class="op">|</span><span class="st">  </span><span class="op">-</span><span class="ot">Inf</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="co">#&gt; </span></span>
+<span id="cb8-14"><a href="#cb8-14"></a>  <span class="kw">nevs2</span>(x1)<span class="op">:</span><span class="st">     </span><span class="dv">0</span> <span class="op">|</span><span class="st">    </span><span class="dv">45</span>    <span class="dv">42</span>    <span class="dv">38</span>    <span class="dv">32</span>    <span class="dv">24</span>    <span class="dv">17</span>    <span class="dv">12</span> <span class="op">|</span><span class="st">     </span><span class="dv">0</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a><span class="co">#&gt; </span></span>
+<span id="cb8-16"><a href="#cb8-16"></a>  <span class="kw">nrec2</span>(x1)<span class="op">:</span><span class="st">     </span><span class="dv">0</span> <span class="op">|</span><span class="st">    </span><span class="dv">64</span>    <span class="dv">60</span>    <span class="dv">54</span>    <span class="dv">45</span>    <span class="dv">35</span>    <span class="dv">25</span>    <span class="dv">17</span> <span class="op">|</span><span class="st">     </span><span class="dv">0</span></span>
+<span id="cb8-17"><a href="#cb8-17"></a><span class="co">#&gt; </span></span></code></pre></div>
 <p>The procedure is now as follows:</p>
 <p>During the accrual time, recruit approximately <span class="math inline">\(\frac{32}{0.7}\approx 46\)</span> patients (per group; the exact number does not really matter as the number of events is the important value) and conduct the interim analysis after <span class="math inline">\(2 \cdot 32= 64\)</span> events have been observed overall. Assume, <span class="math inline">\(q\)</span> patients have not had an event until the interim analysis. These patients are censored for the computation of <span class="math inline">\(L_1\)</span>.</p>
 <p>After the interim analysis, we have <span class="math inline">\(2\cdot \texttt{n2(L_1)}\)</span> (<span class="math inline">\(\texttt{n_2}\)</span> denotes the <strong>adoptr</strong> function) events that should be observed during the second stage. But of course, <span class="math inline">\(q\)</span> patients are still in the trial, so we only need to recruit <span class="math inline">\(\frac{2\cdot \texttt{n2(L_1)}}{\hat{d}}-q\)</span> new people.</p>
@@ -290,19 +288,19 @@ Z_2:= \frac{\sqrt{J_2}L_2-\sqrt{J_1}L_1}{\sqrt{J_2-J_1}}
 <h5 id="example-2">Example<a class="anchor" aria-label="anchor" href="#example-2"></a>
 </h5>
 <p>Consider the same example as before:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">summary</span>(opt_survival<span class="op">$</span>design)</span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="co">#&gt; TwoStageDesignSurvival: nevs1= 32 --&gt; nrec1= 46</span></span>
-<span id="cb10-3"><a href="#cb10-3"></a><span class="co">#&gt; </span></span>
-<span id="cb10-4"><a href="#cb10-4"></a>          futility <span class="op">|</span><span class="st">                  </span>continue                 <span class="op">|</span><span class="st"> </span>efficacy</span>
-<span id="cb10-5"><a href="#cb10-5"></a><span class="co">#&gt; </span></span>
-<span id="cb10-6"><a href="#cb10-6"></a>      x1<span class="op">:</span><span class="st">     </span><span class="fl">0.79</span> <span class="op">|</span><span class="st">  </span><span class="fl">0.83</span>  <span class="fl">0.98</span>  <span class="fl">1.24</span>  <span class="fl">1.54</span>  <span class="fl">1.85</span>  <span class="fl">2.10</span>  <span class="fl">2.25</span> <span class="op">|</span><span class="st">  </span><span class="fl">2.29</span></span>
-<span id="cb10-7"><a href="#cb10-7"></a><span class="co">#&gt; </span></span>
-<span id="cb10-8"><a href="#cb10-8"></a>  <span class="kw">c2</span>(x1)<span class="op">:</span><span class="st">     </span><span class="op">+</span><span class="ot">Inf</span> <span class="op">|</span><span class="st"> </span><span class="fl">+2.17</span> <span class="fl">+2.02</span> <span class="fl">+1.77</span> <span class="fl">+1.43</span> <span class="fl">+1.00</span> <span class="fl">+0.52</span> <span class="fl">+0.07</span> <span class="op">|</span><span class="st">  </span><span class="op">-</span><span class="ot">Inf</span></span>
-<span id="cb10-9"><a href="#cb10-9"></a><span class="co">#&gt; </span></span>
-<span id="cb10-10"><a href="#cb10-10"></a>  <span class="kw">nevs2</span>(x1)<span class="op">:</span><span class="st">     </span><span class="dv">0</span> <span class="op">|</span><span class="st">    </span><span class="dv">45</span>    <span class="dv">42</span>    <span class="dv">38</span>    <span class="dv">32</span>    <span class="dv">24</span>    <span class="dv">17</span>    <span class="dv">12</span> <span class="op">|</span><span class="st">     </span><span class="dv">0</span></span>
-<span id="cb10-11"><a href="#cb10-11"></a><span class="co">#&gt; </span></span>
-<span id="cb10-12"><a href="#cb10-12"></a>  <span class="kw">nrec2</span>(x1)<span class="op">:</span><span class="st">     </span><span class="dv">0</span> <span class="op">|</span><span class="st">    </span><span class="dv">64</span>    <span class="dv">60</span>    <span class="dv">54</span>    <span class="dv">45</span>    <span class="dv">35</span>    <span class="dv">25</span>    <span class="dv">17</span> <span class="op">|</span><span class="st">     </span><span class="dv">0</span></span>
-<span id="cb10-13"><a href="#cb10-13"></a><span class="co">#&gt; </span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">summary</span>(opt_survival<span class="op">$</span>design)</span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="co">#&gt; TwoStageDesignSurvival: nevs1= 32 --&gt; nrec1= 46</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="co">#&gt; </span></span>
+<span id="cb9-4"><a href="#cb9-4"></a>          futility <span class="op">|</span><span class="st">                  </span>continue                 <span class="op">|</span><span class="st"> </span>efficacy</span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="co">#&gt; </span></span>
+<span id="cb9-6"><a href="#cb9-6"></a>      x1<span class="op">:</span><span class="st">     </span><span class="fl">0.79</span> <span class="op">|</span><span class="st">  </span><span class="fl">0.83</span>  <span class="fl">0.98</span>  <span class="fl">1.24</span>  <span class="fl">1.54</span>  <span class="fl">1.85</span>  <span class="fl">2.10</span>  <span class="fl">2.25</span> <span class="op">|</span><span class="st">  </span><span class="fl">2.29</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="co">#&gt; </span></span>
+<span id="cb9-8"><a href="#cb9-8"></a>  <span class="kw">c2</span>(x1)<span class="op">:</span><span class="st">     </span><span class="op">+</span><span class="ot">Inf</span> <span class="op">|</span><span class="st"> </span><span class="fl">+2.17</span> <span class="fl">+2.02</span> <span class="fl">+1.77</span> <span class="fl">+1.43</span> <span class="fl">+1.00</span> <span class="fl">+0.52</span> <span class="fl">+0.07</span> <span class="op">|</span><span class="st">  </span><span class="op">-</span><span class="ot">Inf</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a><span class="co">#&gt; </span></span>
+<span id="cb9-10"><a href="#cb9-10"></a>  <span class="kw">nevs2</span>(x1)<span class="op">:</span><span class="st">     </span><span class="dv">0</span> <span class="op">|</span><span class="st">    </span><span class="dv">45</span>    <span class="dv">42</span>    <span class="dv">38</span>    <span class="dv">32</span>    <span class="dv">24</span>    <span class="dv">17</span>    <span class="dv">12</span> <span class="op">|</span><span class="st">     </span><span class="dv">0</span></span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="co">#&gt; </span></span>
+<span id="cb9-12"><a href="#cb9-12"></a>  <span class="kw">nrec2</span>(x1)<span class="op">:</span><span class="st">     </span><span class="dv">0</span> <span class="op">|</span><span class="st">    </span><span class="dv">64</span>    <span class="dv">60</span>    <span class="dv">54</span>    <span class="dv">45</span>    <span class="dv">35</span>    <span class="dv">25</span>    <span class="dv">17</span> <span class="op">|</span><span class="st">     </span><span class="dv">0</span></span>
+<span id="cb9-13"><a href="#cb9-13"></a><span class="co">#&gt; </span></span></code></pre></div>
 <p>We get the following procedure:</p>
 <p>During the accrual time, recruit approximately 46 patients (per group; the exact number does not matter as only the number of events is important) and conduct the interim analysis after <span class="math inline">\(2 \cdot 32= 64\)</span> events have been observed overall. Assume, <span class="math inline">\(q\)</span> patients have not had an event until the interim analysis. These patients are censored for the computation of <span class="math inline">\(L_1\)</span>. It is important to know the time span these subjects have been in the trial until the analysis is conducted.</p>
 <p>After the interim analysis, we have <span class="math inline">\(2\cdot \texttt{n2(L_1)}\)</span> (<span class="math inline">\(\texttt{n_2}\)</span> denotes the <strong>adoptr</strong> function) events that should be observed during the second stage. But of course, <span class="math inline">\(q\)</span> patients are still in the trial, so we only need to recruit <span class="math inline">\(\frac{2\cdot \texttt{n2(L_1)}}{\hat{d}}-q\)</span> new people.</p>

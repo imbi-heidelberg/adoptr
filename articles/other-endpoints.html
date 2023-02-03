@@ -136,7 +136,7 @@
 <span class="math inline">\(n\)</span> will denote the group-wise sample size.</li>
 </ul>
 <div class="section level2">
-<h2 id="binary-endpoints">Binary endpoints<a class="anchor" aria-label="anchor" href="#binary-endpoints"></a>
+<h2 id="binary-endpoints">Binary Endpoints<a class="anchor" aria-label="anchor" href="#binary-endpoints"></a>
 </h2>
 <p>Binary endpoints are endpoints where individual observations follow a Bernoulli distribution, i.e. <span class="math inline">\(X_i^T \sim Bin(1,p_T)\)</span> and <span class="math inline">\(X_i^C\sim Bin(1,p_C)\)</span>. Our goal is to compare the probability <span class="math inline">\(p_T\)</span> of an event in the treatment group with a fixed value (single-arm trial) or with the probability <span class="math inline">\(p_C\)</span> of an event in the control group (two-armed trial). Thus, assuming that larger probabilities are favorable, we have</p>
 <p><span class="math display">\[
@@ -149,7 +149,7 @@ U=\sqrt{\frac{n}{2}}\frac{\hat{p}_T-\hat{p}_C}{\sqrt{\hat{p}_0(1-\hat{p}_0)}},
 <p>The outcome of <span class="math inline">\(U\)</span> is then compared to <span class="math inline">\(c_f\)</span> and <span class="math inline">\(c_e\)</span>, the first stage boundaries. If <span class="math inline">\(U\in [c_f,c_e]\)</span>, we continue the trial and compute a new value for <span class="math inline">\(U_2\)</span> in the second stage, where we reject the null if <span class="math inline">\(U_2&gt;c_2\)</span>.</p>
 <p>It is a well-known fact that this test statistic is asymptotically normal, and we will give a proof of this in the next section.</p>
 <div class="section level3">
-<h3 id="asymptotic-distribution-of-the-test-statistic">Asymptotic distribution of the test statistic<a class="anchor" aria-label="anchor" href="#asymptotic-distribution-of-the-test-statistic"></a>
+<h3 id="asymptotic-distribution-of-the-test-statistic">Asymptotic Distribution of the Test Statistic<a class="anchor" aria-label="anchor" href="#asymptotic-distribution-of-the-test-statistic"></a>
 </h3>
 <p>We begin with the difference <span class="math inline">\(\hat{p}_T-\hat{p}_C\)</span>. Using the de Moivre-Laplace theorem, we get that <span class="math display">\[
 \frac{n\hat{p}_T-np_T}{\sqrt{n}} \overset{d}{\to} \mathcal{N}(0,p_T(1-p_T)).
@@ -164,10 +164,10 @@ U=\sqrt{\frac{n}{2}}\frac{\hat{p}_T-\hat{p}_C}{\sqrt{\hat{p}_0(1-\hat{p}_0)}},
 </div>
 <div class="section level3">
 <h3 id="adoptr-and-binomial-endpoints">
-<code>adoptr</code> and binomial endpoints<a class="anchor" aria-label="anchor" href="#adoptr-and-binomial-endpoints"></a>
+<code>adoptr</code> and Binomial Endpoints<a class="anchor" aria-label="anchor" href="#adoptr-and-binomial-endpoints"></a>
 </h3>
 <div class="section level4">
-<h4 id="implementation-details">Implementation details<a class="anchor" aria-label="anchor" href="#implementation-details"></a>
+<h4 id="implementation-details">Implementation Details<a class="anchor" aria-label="anchor" href="#implementation-details"></a>
 </h4>
 <p>Currently, <code>adoptr</code> only supports the specification of a single fixed reference value fo <span class="math inline">\(p_C\)</span>, while general prior distributions are supported for the effect size <span class="math inline">\(\theta\)</span>.</p>
 <p>This is a limitation, as uncertainty about the control group rate cannot be represented in this framework. However, in a trial comparing a new treatment to an existing one, it is usually reasonable to assume that some information about the event rate in the control group is available beforehand.</p>
@@ -204,7 +204,7 @@ U=\sqrt{\frac{n}{2}}\frac{\hat{p}_T-\hat{p}_C}{\sqrt{\hat{p}_0(1-\hat{p}_0)}},
 </div>
 </div>
 <div class="section level2">
-<h2 id="time-to-event-endpoints">Time-to-event endpoints<a class="anchor" aria-label="anchor" href="#time-to-event-endpoints"></a>
+<h2 id="time-to-event-endpoints">Time-to-Event Endpoints<a class="anchor" aria-label="anchor" href="#time-to-event-endpoints"></a>
 </h2>
 <p>Time-to-event endpoints are another common type of endpoint used in clinical trials. Time-to-event data is two dimensional and consists of an indicator denoting the occurrence of an event or censoring, and a time of the event or censoring.</p>
 <p>A common effect measure for time-to-event endpoints is the so called hazard-ratio, which is the ratio of hazard functions between two groups or the ratio of the hazard of one group and a postulated baseline hazard.</p>
@@ -217,7 +217,7 @@ H_0: \theta\leq 1 \quad \text{vs.} \quad H_1: \theta &gt;1.
 L=L_T:=\frac{\sum_{j=1}^J O_{T,j}-E_{T,j}}{\sqrt{\sum_{j=1}^J V_{T,j}}}.
 \]</span> Note that it does not matter whether we consider <span class="math inline">\(L_T\)</span> or the analogously defined statistic <span class="math inline">\(L_C\)</span>, both of them yield the same results, so we abbreviate <span class="math inline">\(L_T\)</span> to <span class="math inline">\(L\)</span>. By the central limit theorem, it is easy to see that <span class="math inline">\(L \overset{d}{\to} \mathcal{N}(0,1)\)</span>. Under the alternative, it can be shown that, approximately, <span class="math inline">\(L \sim \mathcal{N}(\text{log}(\theta)\frac{1}{2}\sqrt{J},1)\)</span>. If <span class="math inline">\(d\)</span> is the average probability of and event per recruit in both arms (also known as the event rate), <span class="math inline">\(J\)</span> can be replaced by <span class="math inline">\(2 \cdot n \cdot d\)</span> (where <span class="math inline">\(n\)</span> denotes, like in the previous sections, the number of recruits per group). Thus, by by postulating an event probability, we can calculate the number of recruits per groups that would be required to achieve a specific number of events, and by extensions, a specific power. In <code>adoptr</code>, the parameter <span class="math inline">\(d\)</span> needs to be pre-specified in order to obtain a one-parametric distribution (the other parameter being <span class="math inline">\(\theta\)</span>), and <span class="math inline">\(d\)</span> is assumed to be fixed over time. This is similar to the case of binary endpoints, where the response rate in the control group <span class="math inline">\(p_C\)</span> had to be a constant value.</p>
 <div class="section level3">
-<h3 id="survival-analysis-and-adaptive-designs">Survival analysis and adaptive designs<a class="anchor" aria-label="anchor" href="#survival-analysis-and-adaptive-designs"></a>
+<h3 id="survival-analysis-and-adaptive-designs">Survival Analysis and Adaptive Designs<a class="anchor" aria-label="anchor" href="#survival-analysis-and-adaptive-designs"></a>
 </h3>
 <div class="section level4">
 <h4 id="notation">Notation<a class="anchor" aria-label="anchor" href="#notation"></a>
@@ -227,11 +227,12 @@ L_k=\frac{\sum_{j=1}^{J_k} O_{T,j,k}-E_{T,j,k}}{\sqrt{\sum_{j=1}^{J_k} V_{T,j,k}
 \]</span></p>
 </div>
 <div class="section level4">
-<h4 id="dependency-issues-and-solutions">Dependency issues and solutions<a class="anchor" aria-label="anchor" href="#dependency-issues-and-solutions"></a>
+<h4 id="dependency-issues-and-solutions">Dependency Issues and Solutions<a class="anchor" aria-label="anchor" href="#dependency-issues-and-solutions"></a>
 </h4>
-<p>In survival analysis, it is usual to have a certain follow-up time after the accrual period in order to evaluate the number of events and when they occurred. The recruits that have not had an event until the interim analysis provide information for both stages: in the first stage, we know that these subjects survived, and in the second stage, they might die or they might survive until the end of the trial. Therefore, the construction of stage-wise test statistics which use all available information, but do not contain the same inform</p>
-<p><code>adoptr</code></p>
-<p>Thus, the test statistics <span class="math inline">\(L_{1}\)</span> from the interim analysis and <span class="math inline">\(L_{2}\)</span> from the final analysis are not independent, even though this is an important assumption in <code>adoptr</code> in order to calculate optimal designs.</p>
+<p>For normal distributed endpoints, the stage-wise test statistics come from independent cohorts, which makes the calculation of their joint distributions straightforward.</p>
+<p>In survival analysis, it is possible to have patients that have been recruited during the first stage, but have not had an event at the point of the interim analysis. Those provide information for both stages: in the first stage, we know that they survived, and in the second stage, they might die or even survive until the end of the trial. This makes the construction of a pair of suitable test statistics more challenging.</p>
+<p>Therefore, the construction of stage-wise test statistics which use all available, but no double-counted information contain the same inform</p>
+<p>In the following, we will present two methods to avoid these issues.</p>
 <div class="section level5">
 <h5 id="solution-1-independent-increments">Solution 1: Independent Increments<a class="anchor" aria-label="anchor" href="#solution-1-independent-increments"></a>
 </h5>
@@ -258,9 +259,11 @@ Z_2:= \frac{\sqrt{J_2}L_2-\sqrt{J_1}L_1}{\sqrt{J_2-J_1}}
 <p>After the interim analysis, we have <span class="math inline">\(2\cdot \texttt{n2}(L_1)\)</span> events that should be observed during the second stage. But under the assumption that <span class="math inline">\(q\)</span> patients have not had an event yet, we only need to recruit <span class="math inline">\(\frac{2\cdot \texttt{n2}(L_1)}{d}-q\)</span> new people.</p>
 <p>The test statistic of the final analysis <span class="math inline">\(L_{Trunc}\)</span> is not computed in the usual way, but <span class="math inline">\(n_{j,k}\)</span> now depends on whether a subject has had an event at the interim analysis, so recruit <span class="math inline">\(i\)</span> is in the risk set if <span class="math inline">\(t_{Int}-r_i &lt; j \leq y_{i,2}\)</span>. After having calculated <span class="math inline">\(L_{Trunc}\)</span> this way, we can now use this test statistic instead of <span class="math inline">\(L_\Delta\)</span> for the final analysis.</p>
 </div>
-<div class="section level5">
-<h5 id="example-1">Example<a class="anchor" aria-label="anchor" href="#example-1"></a>
-</h5>
+</div>
+<div class="section level4">
+<h4 id="adoptrand-time-to-event-endpoints">
+<code>adoptr</code>and Time-to-event endpoints<a class="anchor" aria-label="anchor" href="#adoptrand-time-to-event-endpoints"></a>
+</h4>
 <p>In <code>adoptr</code>, trial designs to investigate time-to-event endpoints can be represented in objects of the class <code>SurvivalDesign</code>. These designs consist of first stage futility and efficacy boundary <span class="math inline">\(c_f\)</span> and <span class="math inline">\(c_e\)</span>, the number of events to observe until the conduction of the interim analysis <span class="math inline">\(n_1\)</span> (or <span class="math inline">\(2\cdot n_1}\)</span> for two-armed trials), the second stage efficacy boundary <span class="math inline">\(c_2\)</span>, the number of events to be observed in the second stage <span class="math inline">\(n_2\)</span> (or <span class="math inline">\(2 \cdot n_2\)</span> for two-armed trials), and the postulated rate of events <span class="math inline">\(d\)</span>.</p>
 <p>Let us say we want to plan a two-armed trial trial, where we assume an average rate of events of <span class="math inline">\(d=0.7\)</span>.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -281,20 +284,21 @@ Z_2:= \frac{\sqrt{J_2}L_2-\sqrt{J_1}L_1}{\sqrt{J_2-J_1}}
 <span id="cb8-3"><a href="#cb8-3"></a>opt_survival &lt;-<span class="st"> </span><span class="kw">minimize</span>(exp_no_events,<span class="kw">subject_to</span>(toer_con,pow_con),<span class="dt">initial_design =</span> init,<span class="dt">check_constraints=</span><span class="ot">TRUE</span>)</span>
 <span id="cb8-4"><a href="#cb8-4"></a></span>
 <span id="cb8-5"><a href="#cb8-5"></a><span class="kw">summary</span>(opt_survival<span class="op">$</span>design)</span>
-<span id="cb8-6"><a href="#cb8-6"></a><span class="co">#&gt; TwoStageDesignSurvival: nevs1= 32 --&gt; nrec1= 46</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="co">#&gt; For two-armed trials: nevs denotes half of the overall number of required events. nrec denotes the resulting group-wise sample size.</span></span>
 <span id="cb8-7"><a href="#cb8-7"></a><span class="co">#&gt; </span></span>
-<span id="cb8-8"><a href="#cb8-8"></a>          futility <span class="op">|</span><span class="st">                  </span>continue                 <span class="op">|</span><span class="st"> </span>efficacy</span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="co">#&gt; TwoStageDesignSurvival: nevs1= 32 --&gt; nrec1= 46</span></span>
 <span id="cb8-9"><a href="#cb8-9"></a><span class="co">#&gt; </span></span>
-<span id="cb8-10"><a href="#cb8-10"></a>      x1<span class="op">:</span><span class="st">     </span><span class="fl">0.79</span> <span class="op">|</span><span class="st">  </span><span class="fl">0.83</span>  <span class="fl">0.98</span>  <span class="fl">1.24</span>  <span class="fl">1.54</span>  <span class="fl">1.85</span>  <span class="fl">2.10</span>  <span class="fl">2.25</span> <span class="op">|</span><span class="st">  </span><span class="fl">2.29</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a>          futility <span class="op">|</span><span class="st">                  </span>continue                 <span class="op">|</span><span class="st"> </span>efficacy</span>
 <span id="cb8-11"><a href="#cb8-11"></a><span class="co">#&gt; </span></span>
-<span id="cb8-12"><a href="#cb8-12"></a>  <span class="kw">c2</span>(x1)<span class="op">:</span><span class="st">     </span><span class="op">+</span><span class="ot">Inf</span> <span class="op">|</span><span class="st"> </span><span class="fl">+2.17</span> <span class="fl">+2.02</span> <span class="fl">+1.77</span> <span class="fl">+1.43</span> <span class="fl">+1.00</span> <span class="fl">+0.52</span> <span class="fl">+0.07</span> <span class="op">|</span><span class="st">  </span><span class="op">-</span><span class="ot">Inf</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a>      x1<span class="op">:</span><span class="st">     </span><span class="fl">0.79</span> <span class="op">|</span><span class="st">  </span><span class="fl">0.83</span>  <span class="fl">0.98</span>  <span class="fl">1.24</span>  <span class="fl">1.54</span>  <span class="fl">1.85</span>  <span class="fl">2.10</span>  <span class="fl">2.25</span> <span class="op">|</span><span class="st">  </span><span class="fl">2.29</span></span>
 <span id="cb8-13"><a href="#cb8-13"></a><span class="co">#&gt; </span></span>
-<span id="cb8-14"><a href="#cb8-14"></a>  <span class="kw">nevs2</span>(x1)<span class="op">:</span><span class="st">     </span><span class="dv">0</span> <span class="op">|</span><span class="st">    </span><span class="dv">45</span>    <span class="dv">42</span>    <span class="dv">38</span>    <span class="dv">32</span>    <span class="dv">24</span>    <span class="dv">17</span>    <span class="dv">12</span> <span class="op">|</span><span class="st">     </span><span class="dv">0</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a>  <span class="kw">c2</span>(x1)<span class="op">:</span><span class="st">     </span><span class="op">+</span><span class="ot">Inf</span> <span class="op">|</span><span class="st"> </span><span class="fl">+2.17</span> <span class="fl">+2.02</span> <span class="fl">+1.77</span> <span class="fl">+1.43</span> <span class="fl">+1.00</span> <span class="fl">+0.52</span> <span class="fl">+0.07</span> <span class="op">|</span><span class="st">  </span><span class="op">-</span><span class="ot">Inf</span></span>
 <span id="cb8-15"><a href="#cb8-15"></a><span class="co">#&gt; </span></span>
-<span id="cb8-16"><a href="#cb8-16"></a>  <span class="kw">nrec2</span>(x1)<span class="op">:</span><span class="st">     </span><span class="dv">0</span> <span class="op">|</span><span class="st">    </span><span class="dv">64</span>    <span class="dv">60</span>    <span class="dv">54</span>    <span class="dv">45</span>    <span class="dv">35</span>    <span class="dv">25</span>    <span class="dv">17</span> <span class="op">|</span><span class="st">     </span><span class="dv">0</span></span>
-<span id="cb8-17"><a href="#cb8-17"></a><span class="co">#&gt; </span></span></code></pre></div>
+<span id="cb8-16"><a href="#cb8-16"></a>  <span class="kw">nevs2</span>(x1)<span class="op">:</span><span class="st">     </span><span class="dv">0</span> <span class="op">|</span><span class="st">    </span><span class="dv">45</span>    <span class="dv">42</span>    <span class="dv">38</span>    <span class="dv">32</span>    <span class="dv">24</span>    <span class="dv">17</span>    <span class="dv">12</span> <span class="op">|</span><span class="st">     </span><span class="dv">0</span></span>
+<span id="cb8-17"><a href="#cb8-17"></a><span class="co">#&gt; </span></span>
+<span id="cb8-18"><a href="#cb8-18"></a>  <span class="kw">nrec2</span>(x1)<span class="op">:</span><span class="st">     </span><span class="dv">0</span> <span class="op">|</span><span class="st">    </span><span class="dv">64</span>    <span class="dv">60</span>    <span class="dv">54</span>    <span class="dv">45</span>    <span class="dv">35</span>    <span class="dv">25</span>    <span class="dv">17</span> <span class="op">|</span><span class="st">     </span><span class="dv">0</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a><span class="co">#&gt; </span></span></code></pre></div>
 <p>It should be noted that the number of required events <span class="math inline">\(n_1\)</span> and <span class="math inline">\(n_2\)</span> are the important information thresholds to be adhered to for testing purposes, while <span class="math inline">\(N_1\)</span> and <span class="math inline">\(N_2\)</span> just serve as rough estimates for the required number of subjects to reach these milestones. If additional information about e.g. time-dependence of baseline hazards is available, it may be worthwhile to use a more sophisticated approach than the <span class="math inline">\(N_2 = n_2 / d\)</span> formula to estimate the number of required subjects.</p>
-</div>
 </div>
 </div>
 </div>

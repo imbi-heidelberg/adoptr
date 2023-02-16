@@ -43,6 +43,7 @@ VignetteBuilder: knitr
 Collate: 
     'DataDistribution.R'
     'BinomialDistribution.R'
+    'ChiSquaredDistribution.R'
     'Prior.R'
     'TwoStageDesign.R'
     'OneStageDesign.R'
@@ -62,6 +63,6 @@ Collate:
     'constraints.R'
     'minimize.R'
     'regularization.R'
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 BugReports: https://github.com/kkmann/adoptr/issues
 URL: https://github.com/kkmann/adoptr

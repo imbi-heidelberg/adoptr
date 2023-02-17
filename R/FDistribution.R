@@ -20,8 +20,8 @@
 #' All priors have to be defined for the rate difference
 #' \ifelse{html}{\out{r<sub>E</sub> - r<sub>C</sub>}}{\eqn{r_E - r_C}}.
 #'
-#' @slot df1 cf. parameter 'df'
-#' @slot df2 cf. parameter 'df'
+#' @slot p1 cf. parameter 'df'
+#' @slot p2 cf. parameter 'df'
 #'
 #' @template DataDistributionTemplate
 #'
@@ -30,8 +30,8 @@
 #' @rdname FDataDistribution-class
 #' @exportClass FDistribution
 setClass("FDistribution", representation(
-    df1  = "numeric",
-    df2 =  "numeric"),
+    p1  = "numeric",
+    p2 =  "numeric"),
     contains = "DataDistribution")
 
 
@@ -47,10 +47,10 @@ setClass("FDistribution", representation(
 #'
 #' @rdname FDataDistribution-class
 #' @export
-FDistribution <- function(df1, df2) {
-    if (any(df1 < 0, df2 < 0))
+FDistribution <- function(p1, p2) {
+    if (any(p1 < 0, p2 < 0))
         stop("The degrees of freedom may not be less than 0.")
-    new("FDistribution", df1 = df1, df2 = df2)
+    new("FDistribution", p1 = p1, p2 = p2)
 }
 
 
@@ -66,9 +66,11 @@ FDistribution <- function(df1, df2) {
 #'
 #' @rdname ChiSquaredlDataDistribution-class
 #' @export
-Pearson2xK <- function(n_groups) {
-    new("ChiSquared", df = n_groups-1L, multiplier = 1/n_groups)
+ANOVA <- function(n_groups) {
+    new("FDistribution", df1 = n_groups-1L)
 }
+
+
 
 #' @example
 #' H1 <- PointMassPrior(get_ncp_Pearson2xK(c(.3, .25, .4)), 1)
@@ -93,9 +95,9 @@ get_ncp_Pearson2xK <- function(p_vector) {
 #'
 #' @rdname probability_density_function
 #' @export
-setMethod("probability_density_function", signature("ChiSquared", "numeric", "numeric", "numeric"),
+setMethod("probability_density_function", signature("FDistribution", "numeric", "numeric", "numeric"),
           function(dist, x, n, theta, ...) {
-              return(stats::dchisq(x, df = dist@df, ncp = n / dist@multiplier * theta))
+              return(stats::df(x, df1 = dist@df1, df2 = n-dist@df1+1L,  ncp = n / dist@multiplier * theta))
           })
 
 
@@ -110,7 +112,7 @@ setMethod("probability_density_function", signature("ChiSquared", "numeric", "nu
 #'
 #' @rdname cumulative_distribution_function
 #' @export
-setMethod("cumulative_distribution_function", signature("ChiSquared", "numeric", "numeric", "numeric"),
+setMethod("cumulative_distribution_function", signature("FDistribution", "numeric", "numeric", "numeric"),
           function(dist, x, n, theta, ...) {
               return(stats::pchisq(x, df = dist@df, ncp = n / dist@multiplier * theta))
         })
@@ -119,7 +121,7 @@ setMethod("cumulative_distribution_function", signature("ChiSquared", "numeric",
 #' @param probs vector of probabilities
 #' @rdname BinomialDataDistribution-class
 #' @export
-setMethod("quantile", signature("ChiSquared"),
+setMethod("quantile", signature("FDistribution"),
           function(x, probs, n, theta, ...) { # must be x to conform with generic
               return(stats::qchisq(probs, df = dist@df, ncp = n / dist@multiplier * theta))
           })
@@ -136,13 +138,13 @@ setMethod("quantile", signature("ChiSquared"),
 #' @param seed random seed
 #'
 #' @export
-setMethod("simulate", signature("ChiSquared", "numeric"),
+setMethod("simulate", signature("FDistribution", "numeric"),
           function(object, nsim, n, theta, seed = NULL, ...) {
               if (!is.null(seed)) set.seed(seed)
               return(stats::rchisq(nsim, df = dist@df, ncp = n / dist@multiplier * theta))
 })
 
-setMethod("print", signature('ChiSquared'), function(x, ...) {
+setMethod("print", signature('FDistribution'), function(x, ...) {
     glue::glue(
         "{class(x)[1]}<df={x@df}>"
     )

@@ -34,6 +34,9 @@ setClass("ChiSquared", representation(
     multiplier = "numeric"),
     contains = "DataDistribution")
 
+setClass("Pearson2xK", contains = "ChiSquared")
+setClass("ZSquared", contains = "ChiSquared")
+
 
 #' @param rate_control assumed response rate in control group
 #' @param two_armed logical indicating if a two-armed trial is regarded
@@ -67,12 +70,12 @@ ChiSquared <- function(df, multiplier = 1) {
 #' @rdname ChiSquaredlDataDistribution-class
 #' @export
 Pearson2xK <- function(n_groups) {
-    new("ChiSquared", df = n_groups-1L, multiplier = 1/n_groups)
+    new("Pearson2xK", df = n_groups-1L, multiplier = 1/n_groups)
 }
 
 #' @example
 #' H1 <- PointMassPrior(get_ncp_Pearson2xK(c(.3, .25, .4)), 1)
-get_ncp_Pearson2xK <- function(p_vector) {
+get_tau_Pearson2xK <- function(p_vector) {
     n_groups <- length(p_vector)
     mean_p <- mean(p_vector)
     deltas <- p_vector - mean_p
@@ -94,9 +97,9 @@ get_ncp_Pearson2xK <- function(p_vector) {
 #' @rdname ChiSquaredlDataDistribution-class
 #' @export
 ZSquared <- function(two_armed = TRUE) {
-    new("ChiSquared", df = 1L, multiplier = 1L + two_armed)
+    new("ZSquared", df = 1L, multiplier = 1L + two_armed)
 }
-get_ncp_ZSquared <- function(mu, sigma=1){
+get_tau_ZSquared <- function(mu, sigma=1){
     (mu/sigma)^2
 }
 
@@ -140,7 +143,7 @@ setMethod("cumulative_distribution_function", signature("ChiSquared", "numeric",
 #' @export
 setMethod("quantile", signature("ChiSquared"),
           function(x, probs, n, theta, ...) { # must be x to conform with generic
-              return(stats::qchisq(probs, df = dist@df, ncp = n / dist@multiplier * theta))
+              return(stats::qchisq(probs, df = x@df, ncp = n / x@multiplier * theta))
           })
 
 
@@ -166,6 +169,3 @@ setMethod("print", signature('ChiSquared'), function(x, ...) {
         "{class(x)[1]}<df={x@df}>"
     )
 })
-
-
-

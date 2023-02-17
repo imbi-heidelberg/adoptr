@@ -27,12 +27,17 @@
 #'
 #' @include DataDistribution.R
 #'
-#' @rdname FDataDistribution-class
-#' @exportClass FDistribution
-setClass("FDistribution", representation(
-    p1  = "numeric",
-    p2 =  "numeric"),
+#' @rdname NestedModels-class
+#' @exportClass NestedModels
+setClass("NestedModels", representation(
+    p_inner  = "numeric",
+    p_outer =  "numeric"),
     contains = "DataDistribution")
+
+
+setClass("ANOVA", contains = "NestedModels")
+
+
 
 
 #' @param rate_control assumed response rate in control group
@@ -45,12 +50,12 @@ setClass("FDistribution", representation(
 #'    \code{\link{cumulative_distribution_function}} to evaluate the pdf
 #'    and the cdf, respectively.
 #'
-#' @rdname FDataDistribution-class
+#' @rdname NestedModels-class
 #' @export
-FDistribution <- function(p1, p2) {
-    if (any(p1 < 0, p2 < 0))
-        stop("The degrees of freedom may not be less than 0.")
-    new("FDistribution", p1 = p1, p2 = p2)
+NestedModels <- function(p_inner, p_outer) {
+    if (any(p_inner < 0, p_outer < 0))
+        stop("Numbe of parameters may not be less than 0.")
+    new("NestedModels", p_inner = p_inner, p_outer = p_outer)
 }
 
 
@@ -67,21 +72,15 @@ FDistribution <- function(p1, p2) {
 #' @rdname ChiSquaredlDataDistribution-class
 #' @export
 ANOVA <- function(n_groups) {
-    new("FDistribution", df1 = n_groups-1L)
+    new("ANOVA", p_inner = n_groups, p_outer = 0L)
 }
-
 
 
 #' @example
 #' H1 <- PointMassPrior(get_ncp_Pearson2xK(c(.3, .25, .4)), 1)
-get_ncp_Pearson2xK <- function(p_vector) {
-    n_groups <- length(p_vector)
-    mean_p <- mean(p_vector)
-    deltas <- p_vector - mean_p
-    tau <- (sum(deltas^2)/n_groups - mean(deltas)^2) / (mean_p * (1-mean_p))
-    tau
+get_tau_ANOVA <- function(means, common_sd) {
+    mean((means - mean(means))^2)/common_sd^2
 }
-
 
 
 #' @examples
@@ -95,9 +94,9 @@ get_ncp_Pearson2xK <- function(p_vector) {
 #'
 #' @rdname probability_density_function
 #' @export
-setMethod("probability_density_function", signature("FDistribution", "numeric", "numeric", "numeric"),
+setMethod("probability_density_function", signature("NestedModels", "numeric", "numeric", "numeric"),
           function(dist, x, n, theta, ...) {
-              return(stats::df(x, df1 = dist@df1, df2 = n-dist@df1+1L,  ncp = n / dist@multiplier * theta))
+              return(stats::df(x, df1 = dist@p_inner - dist@p_outer, df2 = n-dist@p_inner,  ncp = n * theta))
           })
 
 
@@ -112,18 +111,22 @@ setMethod("probability_density_function", signature("FDistribution", "numeric", 
 #'
 #' @rdname cumulative_distribution_function
 #' @export
-setMethod("cumulative_distribution_function", signature("FDistribution", "numeric", "numeric", "numeric"),
+setMethod("cumulative_distribution_function", signature("NestedModels", "numeric", "numeric", "numeric"),
           function(dist, x, n, theta, ...) {
-              return(stats::pchisq(x, df = dist@df, ncp = n / dist@multiplier * theta))
+              ret <- x
+              ret[x==-Inf] <- 1
+              ret[x==-Inf] <- 0
+              ret[!is.infinite(x)] <- stats::pf(x, df1 = dist@p_inner - dist@p_outer, df2 = n-dist@p_inner,  ncp = n * theta)
+              return(ret)
         })
 
 
 #' @param probs vector of probabilities
 #' @rdname BinomialDataDistribution-class
 #' @export
-setMethod("quantile", signature("FDistribution"),
+setMethod("quantile", signature("NestedModels"),
           function(x, probs, n, theta, ...) { # must be x to conform with generic
-              return(stats::qchisq(probs, df = dist@df, ncp = n / dist@multiplier * theta))
+              return(stats::qf(probs, df1 = x@p_inner - x@p_outer, df2 = n-x@p_inner,  ncp = n * theta))
           })
 
 
@@ -138,17 +141,29 @@ setMethod("quantile", signature("FDistribution"),
 #' @param seed random seed
 #'
 #' @export
-setMethod("simulate", signature("FDistribution", "numeric"),
+setMethod("simulate", signature("NestedModels", "numeric"),
           function(object, nsim, n, theta, seed = NULL, ...) {
               if (!is.null(seed)) set.seed(seed)
-              return(stats::rchisq(nsim, df = dist@df, ncp = n / dist@multiplier * theta))
+              return(stats::rf(nsim, df1 = x@p_inner - x@p_outer, df2 = n-x@p_inner,  ncp = n * theta))
 })
 
-setMethod("print", signature('FDistribution'), function(x, ...) {
+setMethod("print", signature('NestedModels'), function(x, ...) {
     glue::glue(
-        "{class(x)[1]}<df={x@df}>"
+        "{class(x)[1]}<p_inner={x@p_inner}, p_outer={x@p_outer}>"
     )
 })
+
+setMethod("print", signature('ANOVA'), function(x, ...) {
+    glue::glue(
+        "{class(x)[1]}<n_groups={x@p_inner}>"
+    )
+})
+
+
+
+
+
+
 
 
 

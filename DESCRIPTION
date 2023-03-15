@@ -43,6 +43,7 @@ VignetteBuilder: knitr
 Collate: 
     'DataDistribution.R'
     'BinomialDistribution.R'
+    'ChiSquaredDistribution.R'
     'Prior.R'
     'TwoStageDesign.R'
     'OneStageDesign.R'
@@ -52,6 +53,7 @@ Collate:
     'ConditionalPower.R'
     'ConditionalSampleSize.R'
     'ContinuousPrior.R'
+    'FDistribution.R'
     'GroupSequentialDesign.R'
     'MaximumSampleSize.R'
     'NormalDistribution.R'

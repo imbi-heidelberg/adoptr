@@ -81,7 +81,7 @@ function of a specific distribution dist at a point x."><meta property="og:image
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Probability density function</h1>
-    <small class="dont-index">Source: <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/DataDistribution.R" class="external-link"><code>R/DataDistribution.R</code></a>, <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/BinomialDistribution.R" class="external-link"><code>R/BinomialDistribution.R</code></a>, <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/NormalDistribution.R" class="external-link"><code>R/NormalDistribution.R</code></a>, and 2 more</small>
+    <small class="dont-index">Source: <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/DataDistribution.R" class="external-link"><code>R/DataDistribution.R</code></a>, <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/BinomialDistribution.R" class="external-link"><code>R/BinomialDistribution.R</code></a>, <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/ChiSquaredDistribution.R" class="external-link"><code>R/ChiSquaredDistribution.R</code></a>, and 4 more</small>
     <div class="hidden name"><code>probability_density_function.Rd</code></div>
     </div>
 
@@ -94,6 +94,12 @@ function of a specific distribution <code>dist</code> at a point <code>x</code>.
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">probability_density_function</span><span class="op">(</span><span class="va">dist</span>, <span class="va">x</span>, <span class="va">n</span>, <span class="va">theta</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for Binomial,numeric,numeric,numeric</span></span>
+<span><span class="fu">probability_density_function</span><span class="op">(</span><span class="va">dist</span>, <span class="va">x</span>, <span class="va">n</span>, <span class="va">theta</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for ChiSquared,numeric,numeric,numeric</span></span>
+<span><span class="fu">probability_density_function</span><span class="op">(</span><span class="va">dist</span>, <span class="va">x</span>, <span class="va">n</span>, <span class="va">theta</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for NestedModels,numeric,numeric,numeric</span></span>
 <span><span class="fu">probability_density_function</span><span class="op">(</span><span class="va">dist</span>, <span class="va">x</span>, <span class="va">n</span>, <span class="va">theta</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for Normal,numeric,numeric,numeric</span></span>
@@ -135,6 +141,16 @@ function of a specific distribution <code>dist</code> at a point <code>x</code>.
   intervention and control group.
   Then, the mean is assumed to be
   √ n  theta.</p>
+<p>If the distribution is <code><a href="BinomialDataDistribution-class.html">Binomial</a></code>,
+  theta denotes the rate difference between
+  intervention and control group.
+  Then, the mean is assumed to be
+  √ n  theta.</p>
+<p>If the distribution is <code><a href="BinomialDataDistribution-class.html">Binomial</a></code>,
+  theta denotes the rate difference between
+  intervention and control group.
+  Then, the mean is assumed to be
+  √ n  theta.</p>
 <p>If the distribution is <code><a href="NormalDataDistribution-class.html">Normal</a></code>, then
   the mean is assumed to be
   √ n  theta.</p>
@@ -143,6 +159,12 @@ function of a specific distribution <code>dist</code> at a point <code>x</code>.
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">probability_density_function</span><span class="op">(</span><span class="fu"><a href="BinomialDataDistribution-class.html">Binomial</a></span><span class="op">(</span><span class="fl">.2</span>, <span class="cn">FALSE</span><span class="op">)</span>, <span class="fl">1</span>, <span class="fl">50</span>, <span class="fl">.3</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.01033349</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">probability_density_function</span><span class="op">(</span><span class="fu"><a href="BinomialDataDistribution-class.html">Binomial</a></span><span class="op">(</span><span class="fl">.2</span>, <span class="cn">FALSE</span><span class="op">)</span>, <span class="fl">1</span>, <span class="fl">50</span>, <span class="fl">.3</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.01033349</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">probability_density_function</span><span class="op">(</span><span class="fu"><a href="BinomialDataDistribution-class.html">Binomial</a></span><span class="op">(</span><span class="fl">.2</span>, <span class="cn">FALSE</span><span class="op">)</span>, <span class="fl">1</span>, <span class="fl">50</span>, <span class="fl">.3</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.01033349</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">probability_density_function</span><span class="op">(</span><span class="fu"><a href="NormalDataDistribution-class.html">Normal</a></span><span class="op">(</span><span class="op">)</span>, <span class="fl">1</span>, <span class="fl">50</span>, <span class="fl">.3</span><span class="op">)</span></span></span>

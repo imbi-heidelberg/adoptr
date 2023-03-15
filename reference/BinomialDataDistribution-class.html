@@ -97,7 +97,7 @@ rE - rC."><meta property="og:image" content="https://kkmann.github.io/adoptr/log
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Binomial data distribution</h1>
-    <small class="dont-index">Source: <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/BinomialDistribution.R" class="external-link"><code>R/BinomialDistribution.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/BinomialDistribution.R" class="external-link"><code>R/BinomialDistribution.R</code></a>, <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/ChiSquaredDistribution.R" class="external-link"><code>R/ChiSquaredDistribution.R</code></a>, <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/FDistribution.R" class="external-link"><code>R/FDistribution.R</code></a></small>
     <div class="hidden name"><code>BinomialDataDistribution-class.Rd</code></div>
     </div>
 
@@ -129,6 +129,18 @@ r<sub>E</sub> - r<sub>C</sub>.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">probs</span>, <span class="va">n</span>, <span class="va">theta</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for Binomial,numeric</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/simulate.html" class="external-link">simulate</a></span><span class="op">(</span><span class="va">object</span>, <span class="va">nsim</span>, <span class="va">n</span>, <span class="va">theta</span>, seed <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for ChiSquared</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">probs</span>, <span class="va">n</span>, <span class="va">theta</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for ChiSquared,numeric</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/simulate.html" class="external-link">simulate</a></span><span class="op">(</span><span class="va">object</span>, <span class="va">nsim</span>, <span class="va">n</span>, <span class="va">theta</span>, seed <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for NestedModels</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">probs</span>, <span class="va">n</span>, <span class="va">theta</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for NestedModels,numeric</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/simulate.html" class="external-link">simulate</a></span><span class="op">(</span><span class="va">object</span>, <span class="va">nsim</span>, <span class="va">n</span>, <span class="va">theta</span>, seed <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -177,6 +189,10 @@ r<sub>E</sub> - r<sub>C</sub>.</p>
     <div id="details">
     <h2>Details</h2>
     <p>Note that <code>simulate</code> for class <code>Binomial</code> simulates the
+   normal approximation of the test statistic.</p>
+<p>Note that <code>simulate</code> for class <code>Binomial</code> simulates the
+   normal approximation of the test statistic.</p>
+<p>Note that <code>simulate</code> for class <code>Binomial</code> simulates the
    normal approximation of the test statistic.</p>
     </div>
     <div id="slots">

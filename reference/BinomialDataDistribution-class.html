@@ -6,7 +6,7 @@ rate_control.
 The null hypothesis is:
 rE &amp;le; rC,
 where rE denotes the response rate
-in the invervention group.
+in the intervention group.
 It is tested against the alternative
 rE &gt; rC.
 The test statistic is given as
@@ -14,7 +14,7 @@ X1 = &amp;radic;n (rE - rC) / &amp;radic;(2  r0 (1-r0)),
 where r0 denotes the mean between
 rE and
 rC in the two-armed case,
-and rE in the one-armed case.#'
+and rE in the one-armed case.
 All priors have to be defined for the rate difference
 rE - rC."><meta property="og:image" content="https://kkmann.github.io/adoptr/logo.png"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -97,7 +97,7 @@ rE - rC."><meta property="og:image" content="https://kkmann.github.io/adoptr/log
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Binomial data distribution</h1>
-    <small class="dont-index">Source: <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/BinomialDistribution.R" class="external-link"><code>R/BinomialDistribution.R</code></a>, <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/ChiSquaredDistribution.R" class="external-link"><code>R/ChiSquaredDistribution.R</code></a>, <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/FDistribution.R" class="external-link"><code>R/FDistribution.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/BinomialDistribution.R" class="external-link"><code>R/BinomialDistribution.R</code></a>, <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/FDistribution.R" class="external-link"><code>R/FDistribution.R</code></a></small>
     <div class="hidden name"><code>BinomialDataDistribution-class.Rd</code></div>
     </div>
 
@@ -109,7 +109,7 @@ r<sub>C</sub>, has to be specified by
 The null hypothesis is:
 r<sub>E</sub> ≤ r<sub>C</sub>,
 where r<sub>E</sub> denotes the response rate
-in the invervention group.
+in the intervention group.
 It is tested against the alternative
 r<sub>E</sub> &gt; r<sub>C</sub>.
 The test statistic is given as
@@ -117,7 +117,7 @@ X<sub>1</sub> = √n (r<sub>E</sub> - r<sub>C</sub>) / √(2  r<sub>0</sub> (1-r
 where r<sub>0</sub> denotes the mean between
 r<sub>E</sub> and
 r<sub>C</sub> in the two-armed case,
-and r<sub>E</sub> in the one-armed case.#'
+and r<sub>E</sub> in the one-armed case.
 All priors have to be defined for the rate difference
 r<sub>E</sub> - r<sub>C</sub>.</p>
     </div>
@@ -129,12 +129,6 @@ r<sub>E</sub> - r<sub>C</sub>.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">probs</span>, <span class="va">n</span>, <span class="va">theta</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for Binomial,numeric</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/simulate.html" class="external-link">simulate</a></span><span class="op">(</span><span class="va">object</span>, <span class="va">nsim</span>, <span class="va">n</span>, <span class="va">theta</span>, seed <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S4 method for ChiSquared</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">probs</span>, <span class="va">n</span>, <span class="va">theta</span>, <span class="va">...</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S4 method for ChiSquared,numeric</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/simulate.html" class="external-link">simulate</a></span><span class="op">(</span><span class="va">object</span>, <span class="va">nsim</span>, <span class="va">n</span>, <span class="va">theta</span>, seed <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for NestedModels</span></span>
@@ -189,8 +183,6 @@ r<sub>E</sub> - r<sub>C</sub>.</p>
     <div id="details">
     <h2>Details</h2>
     <p>Note that <code>simulate</code> for class <code>Binomial</code> simulates the
-   normal approximation of the test statistic.</p>
-<p>Note that <code>simulate</code> for class <code>Binomial</code> simulates the
    normal approximation of the test statistic.</p>
 <p>Note that <code>simulate</code> for class <code>Binomial</code> simulates the
    normal approximation of the test statistic.</p>

@@ -1,29 +1,12 @@
 #' Chi-Squared data distribution
 #'
-#' Viel Spaß, Nico.
-#' Implements the normal approximation for a test on rates.
-#' The reponse rate in the control group,
-#' \ifelse{html}{\out{r<sub>C</sub>}}{\eqn{r_C}}, has to be specified by
-#' \code{rate_control}.
-#' The null hypothesis is:
-#' \ifelse{html}{\out{r<sub>E</sub> &le; r<sub>C</sub>}}{\eqn{r_E <= r_C}},
-#' where \ifelse{html}{\out{r<sub>E</sub>}}{\eqn{r_E}} denotes the response rate
-#' in the invervention group.
-#' It is tested against the alternative
-#' \ifelse{html}{\out{r<sub>E</sub> > r<sub>C</sub>}}{\eqn{r_E > r_C}}.
-#' The test statistic is given as
-#' \ifelse{html}{\out{X<sub>1</sub> = &radic;n (r<sub>E</sub> - r<sub>C</sub>) / &radic;(2  r<sub>0</sub> (1-r<sub>0</sub>))}}{\eqn{X_1 = \sqrt{n}(r_E - r_C) / \sqrt{2 r_0 (1- r_0)}}},
-#' where \ifelse{html}{\out{r<sub>0</sub>}}{\eqn{r_0}} denotes the mean between
-#' \ifelse{html}{\out{r<sub>E</sub>}}{\eqn{r_E}} and
-#' \ifelse{html}{\out{r<sub>C</sub>}}{\eqn{r_C}} in the two-armed case,
-#' and \ifelse{html}{\out{r<sub>E</sub>}}{\eqn{r_E}} in the one-armed case.#'
-#' All priors have to be defined for the rate difference
-#' \ifelse{html}{\out{r<sub>E</sub> - r<sub>C</sub>}}{\eqn{r_E - r_C}}.
-#'
-#' @slot df cf. parameter 'df'
-#' @slot ncp cf. parameter 'ncp'
-#'
-#' @template DataDistributionTemplate
+#' Implements a chi-squared distribution. The classes \code{Pearson2xk}
+#' and \code{ZSquared} are subclasses, used in two different situations.
+#' \code{Pearson2xk} can be used in trials with binary endpoints
+#' when testing k groups for homogeneity in response rates.
+#'\code{ZSquared} simply implements the square of a normally distributed random variable
+#'with mean \eqn{\mu} and standard deviation \eqn{\sigma^2}.
+#
 #'
 #' @include DataDistribution.R
 #'
@@ -34,21 +17,39 @@ setClass("ChiSquared", representation(
     multiplier = "numeric"),
     contains = "DataDistribution")
 
+#' Pearson's chi-squared test for 2 x k contingency tables
+#'
+#' This test is used in trials with binary endpoints
+#' when testing k groups for homogeneity in response rates. The null hypothesis is
+#' \ifelse{html}{\out{r<sub>1</sub>}=...=\out{r<sub>k</sub>}}{\eqn{r_1=...=r_k}}, and the
+#' alternative is that there exists a pair of groups with differing rates.
+#'
+#' @include DataDistribution.R
+#'
+#' @rdname ChiSquaredDataDistribution-class
+#' @exportClass Pearson2xK
 setClass("Pearson2xK", contains = "ChiSquared")
+
+
+#' Distribution class of a squared normal distribution
+#'
+#' @include DataDistribution.R
+#'
+#' @rdname ChiSquaredDataDistribution-class
+#' @exportClass ZSquared
 setClass("ZSquared", contains = "ChiSquared")
 
 
-#' @param rate_control assumed response rate in control group
-#' @param two_armed logical indicating if a two-armed trial is regarded
+#' @param df number of degrees of freedom
 #'
 #' @examples
-#' datadist <- Binomial(rate_control = 0.2, two_armed = FALSE)
+#' datadist <- ChiSqured(df=4)
 #'
 #' @seealso see \code{\link{probability_density_function}} and
 #'    \code{\link{cumulative_distribution_function}} to evaluate the pdf
 #'    and the cdf, respectively.
 #'
-#' @rdname ChiSquaredlDataDistribution-class
+#' @rdname ChiSquaredDataDistribution-class
 #' @export
 ChiSquared <- function(df, multiplier = 1) {
     if (df < 0)
@@ -57,24 +58,37 @@ ChiSquared <- function(df, multiplier = 1) {
 }
 
 
-#' @param rate_control assumed response rate in control group
-#' @param two_armed logical indicating if a two-armed trial is regarded
+#' Pearson's chi-squared test for 2 x k contingency tables
+#'
+#' When we test for homogeneity of rates in a k-armed trial with binary endpoints, the test statistic is
+#' chi-squared distributed with \eqn{k-1} degrees of freedom under the null. Under the alternative, the statistic is chi-squared distributed with a
+#' non-centrality parameter \eqn{\lambda}. The function \code{get_tau_Pearson2xk} then computes \eqn{\tau}, such that \eqn{\lambda} is given
+#' as \eqn{n/k \cdot \tau}, where \eqn{n} is the number of subjects per group. In \code{adoptr}, \eqn{\tau} is used in the same way as \eqn{\theta}
+#' in the case of the normally distributed test statistic.
+#'
+#' @param n_groups number of groups considered for testing procedure
 #'
 #' @examples
-#' datadist <- Binomial(rate_control = 0.2, two_armed = FALSE)
+#' pearson <- Pearson2xK(3)
 #'
 #' @seealso see \code{\link{probability_density_function}} and
 #'    \code{\link{cumulative_distribution_function}} to evaluate the pdf
 #'    and the cdf, respectively.
 #'
-#' @rdname ChiSquaredlDataDistribution-class
+#' @rdname Pearson2xK-class
 #' @export
 Pearson2xK <- function(n_groups) {
     new("Pearson2xK", df = n_groups-1L, multiplier = 1/n_groups)
 }
 
-#' @example
-#' H1 <- PointMassPrior(get_ncp_Pearson2xK(c(.3, .25, .4)), 1)
+#' @param p_vector vector denoting the event rates per group
+#'
+#' @examples
+#' H1 <- PointMassPrior(get_tau_Pearson2xK(c(.3, .25, .4)), 1)
+#'
+#' @rdname Pearson2xK-class
+#'
+#' @export
 get_tau_Pearson2xK <- function(p_vector) {
     n_groups <- length(p_vector)
     mean_p <- mean(p_vector)
@@ -84,34 +98,47 @@ get_tau_Pearson2xK <- function(p_vector) {
 }
 
 
-#' @param rate_control assumed response rate in control group
-#' @param two_armed logical indicating if a two-armed trial is regarded
+#' Squared normally distributed random variable
+#'
+#' Implementation of \eqn{Z^2}, where \eqn{Z} is normally distributed with mean \eqn{\mu} and variance
+#' \eqn{\sigma^2}. \eqn{Z^2} is chi-squared distributed with \eqn{1} degree of freedom and non-centrality parameter \eqn{(\mu/\sigma)^2}.
+#' The function \code{get_tau_ZSquared} computes the factor \eqn{\tau=(\mu/\sigma)^2}, such that
+#' \eqn{\tau} is the equivalent of \eqn{\theta} in the normally distributed case.
+#'
+#' @param two_armed logical indicating if a two-aremd trial is regarded
 #'
 #' @examples
-#' datadist <- Binomial(rate_control = 0.2, two_armed = FALSE)
+#' zsquared <- ZSquared(FALSE)
 #'
 #' @seealso see \code{\link{probability_density_function}} and
 #'    \code{\link{cumulative_distribution_function}} to evaluate the pdf
 #'    and the cdf, respectively.
 #'
-#' @rdname ChiSquaredlDataDistribution-class
+#' @rdname ZSquared-class
 #' @export
 ZSquared <- function(two_armed = TRUE) {
     new("ZSquared", df = 1L, multiplier = 1L + two_armed)
 }
+
+
+#' @param mu mean of Z
+#' @param sigma standard deviation of Z
+#'
+#' @examples
+#' H1 <- PointMassPrior(get_tau_ZSquared(0.4, 1)
+#'
+#' @rdname ZSquared-class
+#'
+#' @export
 get_tau_ZSquared <- function(mu, sigma=1){
     (mu/sigma)^2
 }
 
 
 #' @examples
-#' probability_density_function(Binomial(.2, FALSE), 1, 50, .3)
+#' probability_density_function(Pearson2xK(3),1,30,get_tau_Pearson2xK(c(0.3,0.4,0.7,0.2)))
+#' probability_density_function(ZSquared(4),1,35,get_tau_ZSquared(0.4))
 #'
-#' @details If the distribution is \code{\link{Binomial}},
-#'   \ifelse{html}{\out{theta}}{\eqn{theta}} denotes the rate difference between
-#'   intervention and control group.
-#'   Then, the mean is assumed to be
-#'   \ifelse{html}{\out{&radic; n  theta}}{\eqn{\sqrt{n} theta}}.
 #'
 #' @rdname probability_density_function
 #' @export
@@ -122,13 +149,9 @@ setMethod("probability_density_function", signature("ChiSquared", "numeric", "nu
 
 
 #' @examples
-#' cumulative_distribution_function(Binomial(.1, TRUE), 1, 50, .3)
+#' cumulative_distribution_function(Pearson2xK(3),1,30,get_tau_Pearson2xK(c(0.3,0.4,0.7,0.2)))
+#' cumulative_distribution_function(ZSquared(4),1,35,get_tau_ZSquared(0.4))
 #'
-#' @details If the distribution is \code{\link{Binomial}},
-#'   \ifelse{html}{\out{theta}}{\eqn{theta}} denotes the rate difference between
-#'   intervention and control group.
-#'   Then, the mean is assumed to be
-#'   \ifelse{html}{\out{&radic; n  theta}}{\eqn{\sqrt{n} theta}}.
 #'
 #' @rdname cumulative_distribution_function
 #' @export
@@ -139,7 +162,7 @@ setMethod("cumulative_distribution_function", signature("ChiSquared", "numeric",
 
 
 #' @param probs vector of probabilities
-#' @rdname BinomialDataDistribution-class
+#' @rdname ChiSquaredDataDistribution-class
 #' @export
 setMethod("quantile", signature("ChiSquared"),
           function(x, probs, n, theta, ...) { # must be x to conform with generic
@@ -148,10 +171,10 @@ setMethod("quantile", signature("ChiSquared"),
 
 
 
-#' @details Note that \code{simulate} for class \code{Binomial} simulates the
+#' @details Note that \code{simulate} for class \code{ChiSquared} simulates the
 #'    normal approximation of the test statistic.
 #'
-#' @rdname BinomialDataDistribution-class
+#' @rdname ChiSquaredDataDistribution-class
 #'
 #' @param object object of class \code{Binomial}
 #' @param nsim number of simulation runs

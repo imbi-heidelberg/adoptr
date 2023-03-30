@@ -7,7 +7,7 @@
 #' The null hypothesis is:
 #' \ifelse{html}{\out{r<sub>E</sub> &le; r<sub>C</sub>}}{\eqn{r_E <= r_C}},
 #' where \ifelse{html}{\out{r<sub>E</sub>}}{\eqn{r_E}} denotes the response rate
-#' in the invervention group.
+#' in the intervention group.
 #' It is tested against the alternative
 #' \ifelse{html}{\out{r<sub>E</sub> > r<sub>C</sub>}}{\eqn{r_E > r_C}}.
 #' The test statistic is given as
@@ -15,7 +15,7 @@
 #' where \ifelse{html}{\out{r<sub>0</sub>}}{\eqn{r_0}} denotes the mean between
 #' \ifelse{html}{\out{r<sub>E</sub>}}{\eqn{r_E}} and
 #' \ifelse{html}{\out{r<sub>C</sub>}}{\eqn{r_C}} in the two-armed case,
-#' and \ifelse{html}{\out{r<sub>E</sub>}}{\eqn{r_E}} in the one-armed case.#'
+#' and \ifelse{html}{\out{r<sub>E</sub>}}{\eqn{r_E}} in the one-armed case.
 #' All priors have to be defined for the rate difference
 #' \ifelse{html}{\out{r<sub>E</sub> - r<sub>C</sub>}}{\eqn{r_E - r_C}}.
 #'

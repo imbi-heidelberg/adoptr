@@ -69,15 +69,14 @@ NestedModels <- function(p_inner, p_outer) {
 #'    \code{\link{cumulative_distribution_function}} to evaluate the pdf
 #'    and the cdf, respectively.
 #'
-#' @rdname ChiSquaredlDataDistribution-class
+#' @rdname ChiSquaredDataDistribution-class
 #' @export
 ANOVA <- function(n_groups) {
     new("ANOVA", p_inner = n_groups, p_outer = 0L)
 }
 
 
-#' @example
-#' H1 <- PointMassPrior(get_ncp_Pearson2xK(c(.3, .25, .4)), 1)
+
 get_tau_ANOVA <- function(means, common_sd) {
     mean((means - mean(means))^2)/common_sd^2
 }

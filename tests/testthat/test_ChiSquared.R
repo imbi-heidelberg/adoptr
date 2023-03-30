@@ -1,3 +1,18 @@
+#context("Chi-Squared distribution")
+
+init_design <- get_initial_design(
+    theta=get_tau_ZSquared(0.4),
+    alpha=0.05,
+    beta=0.2,
+    dist=ZSquared(FALSE),
+    cf=1,
+)
+
+plot(init_design)
+toer_norm <- Power(Normal(FALSE),H_0)
+evaluate(toer_norm,init_design)
+
+
 # Two-sided, one group test (Z^2 ~ Chi-Squared)
 H_0 <- PointMassPrior(0, 1)
 H_1 <- PointMassPrior(get_tau_ZSquared(.4), 1)
@@ -26,8 +41,9 @@ opt_res <- minimize(
         power >= 0.8,
         toer  <= .05
     ),
-    initial_design,
-    opts = list(algorithm = "NLOPT_LN_COBYLA", xtol_rel = 1e-06, maxeval = 10000)
+    init_design,
+    opts = list(algorithm = "NLOPT_LN_COBYLA", xtol_rel = 1e-06, maxeval = 10000),
+    check_constraints = TRUE
 )
 opt_d <- opt_res$design
 plot(opt_d)

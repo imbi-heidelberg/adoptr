@@ -260,9 +260,9 @@ get_initial_design <- function(theta,
         if(missing(ce)){
             find_c <- function(c){
                 integrand_c <- function(z){
-                    (1-stats::pnorm(c))*stats::dnorm(z)
+                    (1-cumulative_distribution_function(dist,c,1,0))*probability_density_function(dist,z,1,0)
                 }
-                (1-stats::pnorm(c))+stats::integrate(integrand_c,lower=cf,upper=c)$value-alpha
+                (1-cumulative_distribution_function(dist,c,1,0))+stats::integrate(integrand_c,lower=cf,upper=c)$value-alpha
             }
             c2 <- stats::uniroot(find_c, interval=c(cf,5),extendInt="yes")$root
             ce <- c2
@@ -270,18 +270,18 @@ get_initial_design <- function(theta,
         else{
             find_c2 <- function(c){
                 integrand_c <- function(z){
-                    (1-stats::pnorm(c))*stats::dnorm(z)
+                    (1-cumulative_distribution_function(dist,c,1,0))*probability_density_function(dist,z,1,0)
                 }
-                (1-stats::pnorm(ce))+stats::integrate(integrand_c,lower=cf,upper=ce)$value-alpha
+                (1-cumulative_distribution_function(dist,ce,1,0))+stats::integrate(integrand_c,lower=cf,upper=ce)$value-alpha
             }
             c_try <- try(stats::uniroot(find_c2,interval=c(cf,5),extendInt="yes")$root,silent=TRUE)
             if("try-error" %in% class(c_try)){
                 warning("Type I error constraint cannot be fulfilled.")
                 find_c <- function(c){
                     integrand_c <- function(z){
-                        (1-stats::pnorm(c))*stats::dnorm(z)
+                        (1-cumulative_distribution_function(dist,c,1,0))*probability_density_function(dist,z,1,0)
                     }
-                    (1-stats::pnorm(c))+stats::integrate(integrand_c,lower=cf,upper=c)$value-alpha
+                    (1-cumulative_distribution_function(dist,c,1,0))+stats::integrate(integrand_c,lower=cf,upper=c)$value-alpha
                 }
                 c2 <- stats::uniroot(find_c, interval=c(cf,5),extendInt="yes")$root
             }
@@ -297,9 +297,9 @@ get_initial_design <- function(theta,
         if(missing(ce)){
             find_ce <- function(c){
                 integrand_ce <- function(z){
-                    (1-stats::pnorm((c-w1*z)/sqrt(1-w1**2)))*stats::dnorm(z)
+                    (1-cumulative_distribution_function(dist,(c-w1*z)/sqrt(1-w1**2),1,0))*probability_density_function(dist,z,1,0)
                 }
-                (1-stats::pnorm(c))+stats::integrate(integrand_ce,lower=cf,upper=c)$value-alpha
+                (1-cumulative_distribution_function(dist,c,1,0))+stats::integrate(integrand_ce,lower=cf,upper=c)$value-alpha
             }
             c <- stats::uniroot(find_ce,interval=c(cf,5),extendInt="yes")$root
             ce <- c
@@ -307,9 +307,9 @@ get_initial_design <- function(theta,
         else{
             find_ce <- function(c){
                 integrand_ce <- function(z){
-                    (1-stats::pnorm((c-w1*z)/sqrt(1-w1**2)))*stats::dnorm(z)
+                    (1-cumulative_distribution_function(dist,(c-w1*z)/sqrt(1-w1**2),1,0))*probability_density_function(dist,z,1,0)
                 }
-                (1-stats::pnorm(ce))+stats::integrate(integrand_ce,lower=cf,upper=ce)$value-alpha
+                (1-cumulative_distribution_function(dist,ce,1,0))+stats::integrate(integrand_ce,lower=cf,upper=ce)$value-alpha
             }
             c_try <- try(stats::uniroot(find_ce,interval=c(cf,5),extendInt="yes")$root,silent=TRUE)
             if("try-error" %in% class(c_try)){

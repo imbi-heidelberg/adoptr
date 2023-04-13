@@ -200,7 +200,7 @@ get_initial_design <- function(theta,
                                 type_c2=c("linear_decreasing","constant"),
                                 type_n2=c("optimal","constant","linear_decreasing","linear_increasing"),
                                 dist=Normal(),
-                                cf=0,
+                                cf,
                                 ce,
                                 info_ratio=0.5,
                                 slope,
@@ -210,17 +210,25 @@ get_initial_design <- function(theta,
     #match the inputs
     type_design <- match.arg(type_design)
 
+    #overwrite the distributions that depend on n under the null
     if(is(dist,"Student")){
         dist <- Normal(two_armed = dist@two_armed)
     }
 
     #check that theta is correct
+    theta_null <- 0
     theta2 <- theta
     if(is(dist,"Survival")){
         theta2 <- log(theta)
+        theta_null <- 1
     }
 
     if(theta2 < 0) stop("Effect size must not be smaller than zero!")
+
+    #compute cf depending on the current distribution
+    if(missing(cf)){
+        cf <- quantile(dist,0.5,1,theta_null)
+    }
 
     #raise warnings if c2 or n2 are mistakenly specified
     if(type_design=="group-sequential" || type_design == "one-stage"){
@@ -235,6 +243,7 @@ get_initial_design <- function(theta,
     type_c2 <- match.arg(type_c2)
     type_n2 <- match.arg(type_n2)
 
+    #rename some variables
     power <- 1-beta
     w1 <- weight
     w2 <- sqrt(1-w1**2)
@@ -242,10 +251,16 @@ get_initial_design <- function(theta,
     #check for valid inputs
     if (alpha <= 0 || alpha >= 1 || beta <= 0 || beta >= 1 || info_ratio <0 || info_ratio > 1 || weight >= 1 || weight <= 0){
         stop("alpha, beta, information ratio or weightsmust be in (0, 1)!")}
+    if(!missing(ce)){
+        if (ce<cf) {
+            stop("Efficacy boundary must not be smaller than futility boundary!")
+        }
+    }
+
 
     #c2 and n2 type not relevant for one-stage designs, so we first finish that case
     if(type_design=="one-stage"){
-        ce <- ifelse(is(dist,"Survival"),quantile(dist,1-alpha,1,1),quantile(dist,1-alpha,1,0))
+        ce <- quantile(dist,1-alpha,1,theta_null)
         find_n <- function(n){
             (1-cumulative_distribution_function(dist,ce,n,theta))-power
         }
@@ -260,9 +275,9 @@ get_initial_design <- function(theta,
         if(missing(ce)){
             find_c <- function(c){
                 integrand_c <- function(z){
-                    (1-cumulative_distribution_function(dist,c,1,0))*probability_density_function(dist,z,1,0)
+                    (1-cumulative_distribution_function(dist,c,1,theta_null))*probability_density_function(dist,z,1,theta_null)
                 }
-                (1-cumulative_distribution_function(dist,c,1,0))+stats::integrate(integrand_c,lower=cf,upper=c)$value-alpha
+                (1-cumulative_distribution_function(dist,c,1,theta_null))+stats::integrate(integrand_c,lower=cf,upper=c)$value-alpha
             }
             c2 <- stats::uniroot(find_c, interval=c(cf,5),extendInt="yes")$root
             ce <- c2
@@ -270,18 +285,18 @@ get_initial_design <- function(theta,
         else{
             find_c2 <- function(c){
                 integrand_c <- function(z){
-                    (1-cumulative_distribution_function(dist,c,1,0))*probability_density_function(dist,z,1,0)
+                    (1-cumulative_distribution_function(dist,c,1,theta_null))*probability_density_function(dist,z,1,theta_null)
                 }
-                (1-cumulative_distribution_function(dist,ce,1,0))+stats::integrate(integrand_c,lower=cf,upper=ce)$value-alpha
+                (1-cumulative_distribution_function(dist,ce,1,theta_null))+stats::integrate(integrand_c,lower=cf,upper=ce)$value-alpha
             }
             c_try <- try(stats::uniroot(find_c2,interval=c(cf,5),extendInt="yes")$root,silent=TRUE)
             if("try-error" %in% class(c_try)){
                 warning("Type I error constraint cannot be fulfilled.")
                 find_c <- function(c){
                     integrand_c <- function(z){
-                        (1-cumulative_distribution_function(dist,c,1,0))*probability_density_function(dist,z,1,0)
+                        (1-cumulative_distribution_function(dist,c,1,theta_null))*probability_density_function(dist,z,1,theta_null)
                     }
-                    (1-cumulative_distribution_function(dist,c,1,0))+stats::integrate(integrand_c,lower=cf,upper=c)$value-alpha
+                    (1-cumulative_distribution_function(dist,c,1,theta_null))+stats::integrate(integrand_c,lower=cf,upper=c)$value-alpha
                 }
                 c2 <- stats::uniroot(find_c, interval=c(cf,5),extendInt="yes")$root
             }
@@ -297,9 +312,9 @@ get_initial_design <- function(theta,
         if(missing(ce)){
             find_ce <- function(c){
                 integrand_ce <- function(z){
-                    (1-cumulative_distribution_function(dist,(c-w1*z)/sqrt(1-w1**2),1,0))*probability_density_function(dist,z,1,0)
+                    (1-cumulative_distribution_function(dist,(c-w1*z)/sqrt(1-w1**2),1,theta_null))*probability_density_function(dist,z,1,theta_null)
                 }
-                (1-cumulative_distribution_function(dist,c,1,0))+stats::integrate(integrand_ce,lower=cf,upper=c)$value-alpha
+                (1-cumulative_distribution_function(dist,c,1,theta_null))+stats::integrate(integrand_ce,lower=cf,upper=c)$value-alpha
             }
             c <- stats::uniroot(find_ce,interval=c(cf,5),extendInt="yes")$root
             ce <- c
@@ -307,9 +322,9 @@ get_initial_design <- function(theta,
         else{
             find_ce <- function(c){
                 integrand_ce <- function(z){
-                    (1-cumulative_distribution_function(dist,(c-w1*z)/sqrt(1-w1**2),1,0))*probability_density_function(dist,z,1,0)
+                    (1-cumulative_distribution_function(dist,(c-w1*z)/sqrt(1-w1**2),1,theta_null))*probability_density_function(dist,z,1,theta_null)
                 }
-                (1-cumulative_distribution_function(dist,ce,1,0))+stats::integrate(integrand_ce,lower=cf,upper=ce)$value-alpha
+                (1-cumulative_distribution_function(dist,ce,1,theta_null))+stats::integrate(integrand_ce,lower=cf,upper=ce)$value-alpha
             }
             c_try <- try(stats::uniroot(find_ce,interval=c(cf,5),extendInt="yes")$root,silent=TRUE)
             if("try-error" %in% class(c_try)){

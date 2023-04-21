@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">adoptr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Get support of a prior or data distribution</h1>
-    <small class="dont-index">Source: <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/Prior.R" class="external-link"><code>R/Prior.R</code></a>, <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/ContinuousPrior.R" class="external-link"><code>R/ContinuousPrior.R</code></a>, <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/PointMassPrior.R" class="external-link"><code>R/PointMassPrior.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/Prior.R" class="external-link"><code>R/Prior.R</code></a>, <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/PointMassPrior.R" class="external-link"><code>R/PointMassPrior.R</code></a>, <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/ContinuousPrior.R" class="external-link"><code>R/ContinuousPrior.R</code></a></small>
     <div class="hidden name"><code>bounds.Rd</code></div>
     </div>
 
@@ -91,10 +91,10 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bounds</span><span class="op">(</span><span class="va">dist</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># S4 method for ContinuousPrior</span></span>
+<span><span class="co"># S4 method for PointMassPrior</span></span>
 <span><span class="fu">bounds</span><span class="op">(</span><span class="va">dist</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># S4 method for PointMassPrior</span></span>
+<span><span class="co"># S4 method for ContinuousPrior</span></span>
 <span><span class="fu">bounds</span><span class="op">(</span><span class="va">dist</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -119,13 +119,13 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">bounds</span><span class="op">(</span><span class="fu"><a href="ContinuousPrior-class.html">ContinuousPrior</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">dunif</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">.2</span>, <span class="fl">.4</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.2</span>, <span class="fl">.4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2 0.4</span>
-<span class="r-in"><span><span class="co"># &gt; 0.2 0.4</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">bounds</span><span class="op">(</span><span class="fu"><a href="PointMassPrior-class.html">PointMassPrior</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">.5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.3</span>, <span class="fl">.7</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">bounds</span><span class="op">(</span><span class="fu"><a href="PointMassPrior-class.html">PointMassPrior</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">.5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.3</span>, <span class="fl">.7</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.0 0.5</span>
 <span class="r-in"><span><span class="co"># &gt; 0.3 0.7</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">bounds</span><span class="op">(</span><span class="fu"><a href="ContinuousPrior-class.html">ContinuousPrior</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">dunif</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">.2</span>, <span class="fl">.4</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.2</span>, <span class="fl">.4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2 0.4</span>
+<span class="r-in"><span><span class="co"># &gt; 0.2 0.4</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

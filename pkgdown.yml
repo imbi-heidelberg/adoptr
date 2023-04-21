@@ -7,9 +7,8 @@ articles:
   composite-scores: composite-scores.html
   conditional-scores: conditional-scores.html
   defining-new-scores: defining-new-scores.html
-  other-endpoints: other-endpoints.html
   working-with-priors: working-with-priors.html
-last_built: 2023-04-13T14:16Z
+last_built: 2023-04-21T14:39Z
 urls:
   reference: https://kkmann.github.io/adoptr/reference
   article: https://kkmann.github.io/adoptr/articles

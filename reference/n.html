@@ -4,8 +4,6 @@ TwoStageDesign.
 n1 returns the first-stage sample size of a design,
 n2 the stage-two sample size conditional on the stage-one test
 statistic and n the overall sample size n1 + n2.
-When dealing with time-to-event endpoints, the functions n1, n2 and
-n return the number of events instead of the sample size.
 Internally, objects of the class TwoStageDesign allow non-natural,
 real sample sizes to allow smooth optimization (cf. minimize for
 details).
@@ -29,7 +27,7 @@ integer)."><meta property="og:image" content="https://kkmann.github.io/adoptr/lo
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">adoptr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -92,7 +90,7 @@ integer)."><meta property="og:image" content="https://kkmann.github.io/adoptr/lo
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Query sample size of a design</h1>
-    <small class="dont-index">Source: <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/TwoStageDesign.R" class="external-link"><code>R/TwoStageDesign.R</code></a>, <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/OneStageDesign.R" class="external-link"><code>R/OneStageDesign.R</code></a>, <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/GroupSequentialDesign.R" class="external-link"><code>R/GroupSequentialDesign.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/TwoStageDesign.R" class="external-link"><code>R/TwoStageDesign.R</code></a>, <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/GroupSequentialDesign.R" class="external-link"><code>R/GroupSequentialDesign.R</code></a>, <a href="https://github.com/kkmann/adoptr/blob/HEAD/R/OneStageDesign.R" class="external-link"><code>R/OneStageDesign.R</code></a></small>
     <div class="hidden name"><code>n.Rd</code></div>
     </div>
 
@@ -102,8 +100,6 @@ integer)."><meta property="og:image" content="https://kkmann.github.io/adoptr/lo
 <code>n1</code> returns the first-stage sample size of a design,
 <code>n2</code> the stage-two sample size conditional on the stage-one test
 statistic and <code>n</code> the overall sample size <code>n1 + n2</code>.
-When dealing with time-to-event endpoints, the functions <code>n1</code>, <code>n2</code> and
-<code>n</code> return the number of events instead of the sample size.
 Internally, objects of the class <code>TwoStageDesign</code> allow non-natural,
 real sample sizes to allow smooth optimization (cf. <code><a href="minimize.html">minimize</a></code> for
 details).
@@ -128,11 +124,11 @@ integer).</p>
 <span><span class="co"># S4 method for TwoStageDesign,numeric</span></span>
 <span><span class="fu">n</span><span class="op">(</span><span class="va">d</span>, <span class="va">x1</span>, round <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># S4 method for OneStageDesign,numeric</span></span>
-<span><span class="fu">n2</span><span class="op">(</span><span class="va">d</span>, <span class="va">x1</span>, <span class="va">...</span><span class="op">)</span></span>
-<span></span>
 <span><span class="co"># S4 method for GroupSequentialDesign,numeric</span></span>
-<span><span class="fu">n2</span><span class="op">(</span><span class="va">d</span>, <span class="va">x1</span>, round <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">n2</span><span class="op">(</span><span class="va">d</span>, <span class="va">x1</span>, round <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for OneStageDesign,numeric</span></span>
+<span><span class="fu">n2</span><span class="op">(</span><span class="va">d</span>, <span class="va">x1</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">

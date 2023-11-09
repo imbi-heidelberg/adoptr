@@ -12,7 +12,7 @@ get_initial_design(
   type_c2 = c("linear_decreasing", "constant"),
   type_n2 = c("optimal", "constant", "linear_decreasing", "linear_increasing"),
   dist = Normal(),
-  cf = 0,
+  cf,
   ce,
   info_ratio = 0.5,
   slope,

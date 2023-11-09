@@ -1,27 +1,15 @@
-#' Chi-Squared data distribution
+#' F-Distribution
 #'
-#' Viel Spaß, Nico.
-#' Implements the normal approximation for a test on rates.
-#' The reponse rate in the control group,
-#' \ifelse{html}{\out{r<sub>C</sub>}}{\eqn{r_C}}, has to be specified by
-#' \code{rate_control}.
-#' The null hypothesis is:
-#' \ifelse{html}{\out{r<sub>E</sub> &le; r<sub>C</sub>}}{\eqn{r_E <= r_C}},
-#' where \ifelse{html}{\out{r<sub>E</sub>}}{\eqn{r_E}} denotes the response rate
-#' in the invervention group.
-#' It is tested against the alternative
-#' \ifelse{html}{\out{r<sub>E</sub> > r<sub>C</sub>}}{\eqn{r_E > r_C}}.
-#' The test statistic is given as
-#' \ifelse{html}{\out{X<sub>1</sub> = &radic;n (r<sub>E</sub> - r<sub>C</sub>) / &radic;(2  r<sub>0</sub> (1-r<sub>0</sub>))}}{\eqn{X_1 = \sqrt{n}(r_E - r_C) / \sqrt{2 r_0 (1- r_0)}}},
-#' where \ifelse{html}{\out{r<sub>0</sub>}}{\eqn{r_0}} denotes the mean between
-#' \ifelse{html}{\out{r<sub>E</sub>}}{\eqn{r_E}} and
-#' \ifelse{html}{\out{r<sub>C</sub>}}{\eqn{r_C}} in the two-armed case,
-#' and \ifelse{html}{\out{r<sub>E</sub>}}{\eqn{r_E}} in the one-armed case.#'
-#' All priors have to be defined for the rate difference
-#' \ifelse{html}{\out{r<sub>E</sub> - r<sub>C</sub>}}{\eqn{r_E - r_C}}.
+#' Implements the F-distribution used for an ANOVA or for the comparison of the fit of two
+#' nested regression models. In both cases, the test statistic follows a F-distribution.
+#' \code{NestedModel} is used to compare the fit of two regression models, where one model contains
+#' the independent variables of the smaller model as a subset. Then, one can use ANOVA to determine
+#' whether more variance can be explained by adding more independent variables.
+#' In the class \code{ANOVA}, the number of independent variables of the smaller model is set to \eqn{1}
+#' in order to match the degrees of freedom and we obtain a one-way ANOVA.
 #'
-#' @slot p1 cf. parameter 'df'
-#' @slot p2 cf. parameter 'df'
+#' @slot p_inner number of parameters in smaller model
+#' @slot p_outer number of parameters in bigger model
 #'
 #' @template DataDistributionTemplate
 #'
@@ -35,16 +23,19 @@ setClass("NestedModels", representation(
     contains = "DataDistribution")
 
 
+#' @include DataDistribution.R
+#'
+#' @rdname ANOVA-class
+#' @exportClass ANOVA
 setClass("ANOVA", contains = "NestedModels")
 
 
 
-
-#' @param rate_control assumed response rate in control group
-#' @param two_armed logical indicating if a two-armed trial is regarded
+#' @param p_inner number of independent variables in smaller model
+#' @param p_outer number of independent variables in bigger model
 #'
 #' @examples
-#' datadist <- Binomial(rate_control = 0.2, two_armed = FALSE)
+#' model <- NestedModels(2, 4)
 #'
 #' @seealso see \code{\link{probability_density_function}} and
 #'    \code{\link{cumulative_distribution_function}} to evaluate the pdf
@@ -54,31 +45,35 @@ setClass("ANOVA", contains = "NestedModels")
 #' @export
 NestedModels <- function(p_inner, p_outer) {
     if (any(p_inner < 0, p_outer < 0))
-        stop("Numbe of parameters may not be less than 0.")
+        stop("Number of parameters may not be less than 0.")
     new("NestedModels", p_inner = p_inner, p_outer = p_outer)
 }
 
 
-#' @param rate_control assumed response rate in control group
-#' @param two_armed logical indicating if a two-armed trial is regarded
+#' Analysis of Variance
+#'
+#' ANOVA is used to test whether there is a significant difference between the means of groups.
+#' The sample size which \code{adoptr} returns is the total sample size,
+#'
+#' @param n_groups number of groups to be compared
 #'
 #' @examples
-#' datadist <- Binomial(rate_control = 0.2, two_armed = FALSE)
+#' model <- ANOVA(3L)
 #'
 #' @seealso see \code{\link{probability_density_function}} and
 #'    \code{\link{cumulative_distribution_function}} to evaluate the pdf
 #'    and the cdf, respectively.
 #'
-#' @rdname ChiSquaredDataDistribution-class
+#' @rdname ANOVA-class
 #' @export
 ANOVA <- function(n_groups) {
-    new("ANOVA", p_inner = n_groups, p_outer = 0L)
+    new("ANOVA", p_outer = n_groups, p_inner = 1L)
 }
 
 
-
+#' @export
 get_tau_ANOVA <- function(means, common_sd) {
-    mean((means - mean(means))^2)/common_sd^2
+    mean((means - mean(means))^2) / common_sd^2
 }
 
 
@@ -95,7 +90,7 @@ get_tau_ANOVA <- function(means, common_sd) {
 #' @export
 setMethod("probability_density_function", signature("NestedModels", "numeric", "numeric", "numeric"),
           function(dist, x, n, theta, ...) {
-              return(stats::df(x, df1 = dist@p_inner - dist@p_outer, df2 = n-dist@p_inner,  ncp = n * theta))
+              return(stats::df(x, df1 = dist@p_outer - dist@p_inner, df2 = n - dist@p_outer,  ncp = n * theta))
           })
 
 
@@ -113,9 +108,10 @@ setMethod("probability_density_function", signature("NestedModels", "numeric", "
 setMethod("cumulative_distribution_function", signature("NestedModels", "numeric", "numeric", "numeric"),
           function(dist, x, n, theta, ...) {
               ret <- x
-              ret[x==-Inf] <- 1
+              ret[x==Inf] <- 1
               ret[x==-Inf] <- 0
-              ret[!is.infinite(x)] <- stats::pf(x, df1 = dist@p_inner - dist@p_outer, df2 = n-dist@p_inner,  ncp = n * theta)
+              ret[!is.infinite(x)] <- stats::pf(x, df1 = dist@p_outer - dist@p_inner, df2 = n - dist@p_outer,  ncp = n * theta)
+              #cat('df1: ', dist@p_outer - dist@p_inner, ' df2: ', n - dist@p_outer, ' ncp: ', n * theta, ' n: ', n, '\n')
               return(ret)
         })
 
@@ -125,7 +121,7 @@ setMethod("cumulative_distribution_function", signature("NestedModels", "numeric
 #' @export
 setMethod("quantile", signature("NestedModels"),
           function(x, probs, n, theta, ...) { # must be x to conform with generic
-              return(stats::qf(probs, df1 = x@p_inner - x@p_outer, df2 = n-x@p_inner,  ncp = n * theta))
+              return(stats::qf(probs, df1 = x@p_outer - x@p_inner, df2 = n - x@p_outer,  ncp = n * theta))
           })
 
 
@@ -143,7 +139,7 @@ setMethod("quantile", signature("NestedModels"),
 setMethod("simulate", signature("NestedModels", "numeric"),
           function(object, nsim, n, theta, seed = NULL, ...) {
               if (!is.null(seed)) set.seed(seed)
-              return(stats::rf(nsim, df1 = x@p_inner - x@p_outer, df2 = n-x@p_inner,  ncp = n * theta))
+              return(stats::rf(nsim, df1 = x@p_outer - x@p_inner, df2 = n - x@p_outer,  ncp = n * theta))
 })
 
 setMethod("print", signature('NestedModels'), function(x, ...) {

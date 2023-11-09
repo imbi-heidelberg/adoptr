@@ -1,4 +1,48 @@
-#context("Chi-Squared distribution")
+context("Chi-Squared distribution")
+
+test_that('constructors work'{
+
+    expect_true(
+        ChiSquared(df = 10)@multiplier == 1
+    )
+
+    expect_error(
+        ChiSquared(df = -1)
+    )
+
+    expect_error(
+        ChiSquared(df = 2.3)
+    )
+
+    expect_true(
+        Pearson2xK(5)@df == 4
+    )
+
+    expect_true(
+        Pearson2xK(5)@multiplier == 1 / (Pearson2xK(5)@df + 1)
+    )
+
+    expect_error(
+        Pearson2xK(-3)
+    )
+
+    expect_error(
+        Pearson2xK(1.8)
+    )
+
+    expect_true(
+        ZSquared()@two_armed
+    )
+
+    expect_true(
+        !(ZSquared(two_armed = FALSE)@two_armed)
+    )
+})
+
+test_that('thetas are correctly computed'{
+
+})
+
 
 init_design <- get_initial_design(
     theta=get_tau_ZSquared(0.4),
@@ -21,13 +65,15 @@ ess <- ExpectedSampleSize(datadist, H_1)
 power <- Power(datadist, H_1)
 toer  <- Power(datadist, H_0)
 initial_design <- get_initial_design(
-    theta = sqrt(H_1@theta),
+    theta = H_1@theta,
     alpha = .025,
     beta  = .2,
+    cf = 1.5,
     type_design  = "two-stage",
-    dist  = Normal(FALSE),
+    dist  = datadist,
     order = 7L
 )
+plot(initial_design)
 initial_design@c1f <- .2
 initial_design@c1e <- initial_design@c1e^2*.8
 initial_design@c2_pivots <- initial_design@c2_pivots^2*.8
@@ -41,7 +87,7 @@ opt_res <- minimize(
         power >= 0.8,
         toer  <= .05
     ),
-    init_design,
+    initial_design,
     opts = list(algorithm = "NLOPT_LN_COBYLA", xtol_rel = 1e-06, maxeval = 10000),
     check_constraints = TRUE
 )

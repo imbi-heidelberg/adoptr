@@ -4,11 +4,15 @@
 \name{NestedModels-class}
 \alias{NestedModels-class}
 \alias{NestedModels}
-\title{Chi-Squared data distribution}
+\title{F-Distribution}
 \usage{
 NestedModels(p_inner, p_outer)
 }
 \arguments{
+\item{p_inner}{number of independent variables in smaller model}
+
+\item{p_outer}{number of independent variables in bigger model}
+
 \item{x}{outcome}
 
 \item{n}{sample size}
@@ -16,42 +20,26 @@ NestedModels(p_inner, p_outer)
 \item{theta}{distribution parameter}
 
 \item{...}{further optional arguments}
-
-\item{rate_control}{assumed response rate in control group}
-
-\item{two_armed}{logical indicating if a two-armed trial is regarded}
 }
 \description{
-Viel Spaß, Nico.
-Implements the normal approximation for a test on rates.
-The reponse rate in the control group,
-\ifelse{html}{\out{r<sub>C</sub>}}{\eqn{r_C}}, has to be specified by
-\code{rate_control}.
-The null hypothesis is:
-\ifelse{html}{\out{r<sub>E</sub> &le; r<sub>C</sub>}}{\eqn{r_E <= r_C}},
-where \ifelse{html}{\out{r<sub>E</sub>}}{\eqn{r_E}} denotes the response rate
-in the invervention group.
-It is tested against the alternative
-\ifelse{html}{\out{r<sub>E</sub> > r<sub>C</sub>}}{\eqn{r_E > r_C}}.
-The test statistic is given as
-\ifelse{html}{\out{X<sub>1</sub> = &radic;n (r<sub>E</sub> - r<sub>C</sub>) / &radic;(2  r<sub>0</sub> (1-r<sub>0</sub>))}}{\eqn{X_1 = \sqrt{n}(r_E - r_C) / \sqrt{2 r_0 (1- r_0)}}},
-where \ifelse{html}{\out{r<sub>0</sub>}}{\eqn{r_0}} denotes the mean between
-\ifelse{html}{\out{r<sub>E</sub>}}{\eqn{r_E}} and
-\ifelse{html}{\out{r<sub>C</sub>}}{\eqn{r_C}} in the two-armed case,
-and \ifelse{html}{\out{r<sub>E</sub>}}{\eqn{r_E}} in the one-armed case.#'
-All priors have to be defined for the rate difference
-\ifelse{html}{\out{r<sub>E</sub> - r<sub>C</sub>}}{\eqn{r_E - r_C}}.
+Implements the F-distribution used for an ANOVA or for the comparison of the fit of two
+nested regression models. In both cases, the test statistic follows a F-distribution.
+\code{NestedModel} is used to compare the fit of two regression models, where one model contains
+the independent variables of the smaller model as a subset. Then, one can use ANOVA to determine
+whether more variance can be explained by adding more independent variables.
+In the class \code{ANOVA}, the number of independent variables of the smaller model is set to \eqn{1}
+in order to match the degrees of freedom and we obtain a one-way ANOVA.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{p1}}{cf. parameter 'df'}
+\item{\code{p_inner}}{number of parameters in smaller model}
 
-\item{\code{p2}}{cf. parameter 'df'}
+\item{\code{p_outer}}{number of parameters in bigger model}
 }}
 
 \examples{
-datadist <- Binomial(rate_control = 0.2, two_armed = FALSE)
+model <- NestedModels(2, 4)
 
 }
 \seealso{

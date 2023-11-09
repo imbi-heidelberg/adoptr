@@ -2,13 +2,14 @@
 #'
 #' Implements a chi-squared distribution. The classes \code{Pearson2xk}
 #' and \code{ZSquared} are subclasses, used in two different situations.
-#' \code{Pearson2xk} can be used in trials with binary endpoints
-#' when testing k groups for homogeneity in response rates.
-#'\code{ZSquared} simply implements the square of a normally distributed random variable
-#'with mean \eqn{\mu} and standard deviation \eqn{\sigma^2}.
-#
+#' \code{Pearson2xK} is used when testing k groups for homogeneity in
+#' response rates. The null hypothesis is
+#' \ifelse{html}{\out{r<sub>1</sub>}=...=\out{r<sub>k</sub>}}{\eqn{r_1=...=r_k}}, and the
+#' alternative is that there exists a pair of groups with differing rates.
+#' \code{ZSquared} implements the square of a normally distributed random variable
+#' with mean \eqn{\mu} and standard deviation \eqn{\sigma^2}.
 #'
-#' @include DataDistribution.R
+#' @template DataDistributionTemplate
 #'
 #' @rdname ChiSquaredDataDistribution-class
 #' @exportClass ChiSquared
@@ -17,16 +18,12 @@ setClass("ChiSquared", representation(
     multiplier = "numeric"),
     contains = "DataDistribution")
 
-#' Pearson's chi-squared test for 2 x k contingency tables
-#'
-#' This test is used in trials with binary endpoints
-#' when testing k groups for homogeneity in response rates. The null hypothesis is
-#' \ifelse{html}{\out{r<sub>1</sub>}=...=\out{r<sub>k</sub>}}{\eqn{r_1=...=r_k}}, and the
-#' alternative is that there exists a pair of groups with differing rates.
+
+#' Pearson's chi-squared test for contingency tables
 #'
 #' @include DataDistribution.R
 #'
-#' @rdname ChiSquaredDataDistribution-class
+#' @rdname Pearson2xK-class
 #' @exportClass Pearson2xK
 setClass("Pearson2xK", contains = "ChiSquared")
 
@@ -35,7 +32,7 @@ setClass("Pearson2xK", contains = "ChiSquared")
 #'
 #' @include DataDistribution.R
 #'
-#' @rdname ChiSquaredDataDistribution-class
+#' @rdname ZSquared-class
 #' @exportClass ZSquared
 setClass("ZSquared", contains = "ChiSquared")
 
@@ -43,7 +40,7 @@ setClass("ZSquared", contains = "ChiSquared")
 #' @param df number of degrees of freedom
 #'
 #' @examples
-#' datadist <- ChiSqured(df=4)
+#' datadist <- ChiSquared(df=4)
 #'
 #' @seealso see \code{\link{probability_density_function}} and
 #'    \code{\link{cumulative_distribution_function}} to evaluate the pdf
@@ -52,8 +49,8 @@ setClass("ZSquared", contains = "ChiSquared")
 #' @rdname ChiSquaredDataDistribution-class
 #' @export
 ChiSquared <- function(df, multiplier = 1) {
-    if (df < 0)
-        stop("The degrees of freedom may not be less than 0.")
+    if (df < 0 || abs(df - round(df)) > sqrt(.Machine$double.eps))
+        stop("The degrees of freedom must be natural numbers.")
     new("ChiSquared", df = df, multiplier = 1)
 }
 
@@ -71,14 +68,13 @@ ChiSquared <- function(df, multiplier = 1) {
 #' @examples
 #' pearson <- Pearson2xK(3)
 #'
-#' @seealso see \code{\link{probability_density_function}} and
-#'    \code{\link{cumulative_distribution_function}} to evaluate the pdf
-#'    and the cdf, respectively.
 #'
 #' @rdname Pearson2xK-class
 #' @export
 Pearson2xK <- function(n_groups) {
-    new("Pearson2xK", df = n_groups-1L, multiplier = 1/n_groups)
+    if (n_groups < 0 || abs(n_groups - round(n_groups)) > sqrt(.Machine$double.eps))
+        stop("The number of groups must be a natural number.")
+    new("Pearson2xK", df = n_groups - 1L, multiplier = 1/n_groups)
 }
 
 #' @param p_vector vector denoting the event rates per group
@@ -110,9 +106,6 @@ get_tau_Pearson2xK <- function(p_vector) {
 #' @examples
 #' zsquared <- ZSquared(FALSE)
 #'
-#' @seealso see \code{\link{probability_density_function}} and
-#'    \code{\link{cumulative_distribution_function}} to evaluate the pdf
-#'    and the cdf, respectively.
 #'
 #' @rdname ZSquared-class
 #' @export
@@ -130,14 +123,14 @@ ZSquared <- function(two_armed = TRUE) {
 #' @rdname ZSquared-class
 #'
 #' @export
-get_tau_ZSquared <- function(mu, sigma=1){
+get_tau_ZSquared <- function(mu, sigma = 1){
     (mu/sigma)^2
 }
 
 
 #' @examples
-#' probability_density_function(Pearson2xK(3),1,30,get_tau_Pearson2xK(c(0.3,0.4,0.7,0.2)))
-#' probability_density_function(ZSquared(4),1,35,get_tau_ZSquared(0.4))
+#' probability_density_function(Pearson2xK(3), 1, 30, get_tau_Pearson2xK(c(0.3, 0.4, 0.7, 0.2)))
+#' probability_density_function(ZSquared(4), 1, 35, get_tau_ZSquared(0.4))
 #'
 #'
 #' @rdname probability_density_function
@@ -149,8 +142,8 @@ setMethod("probability_density_function", signature("ChiSquared", "numeric", "nu
 
 
 #' @examples
-#' cumulative_distribution_function(Pearson2xK(3),1,30,get_tau_Pearson2xK(c(0.3,0.4,0.7,0.2)))
-#' cumulative_distribution_function(ZSquared(4),1,35,get_tau_ZSquared(0.4))
+#' cumulative_distribution_function(Pearson2xK(3), 1, 30, get_tau_Pearson2xK(c(0.3,0.4,0.7,0.2)))
+#' cumulative_distribution_function(ZSquared(4), 1, 35, get_tau_ZSquared(0.4))
 #'
 #'
 #' @rdname cumulative_distribution_function

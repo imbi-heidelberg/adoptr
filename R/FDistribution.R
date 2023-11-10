@@ -53,7 +53,10 @@ NestedModels <- function(p_inner, p_outer) {
 #' Analysis of Variance
 #'
 #' ANOVA is used to test whether there is a significant difference between the means of groups.
-#' The sample size which \code{adoptr} returns is the total sample size,
+#' The sample size which \code{adoptr} returns is the group wise sample size.
+#' The function \code{get_tau_ANOVA} is used to obtain a parameter \eqn{\tau},
+#' which is used in the same way as \eqn{\theta} to describe the difference of
+#' means between the groups.
 #'
 #' @param n_groups number of groups to be compared
 #'
@@ -70,68 +73,75 @@ ANOVA <- function(n_groups) {
     new("ANOVA", p_outer = n_groups, p_inner = 1L)
 }
 
-
+#' @param means vector denoting the mean per group
+#' @param common_sd standard deviation of the groups
+#'
+#' @examples
+#' H1 <- PointMassPrior(get_tau_ANOVA(c(0.4, 0.8, 0.5)), 1)
+#'
+#' @rdname ANOVA-class
+#'
 #' @export
-get_tau_ANOVA <- function(means, common_sd) {
+get_tau_ANOVA <- function(means, common_sd = 1) {
     mean((means - mean(means))^2) / common_sd^2
 }
 
 
 #' @examples
-#' probability_density_function(Binomial(.2, FALSE), 1, 50, .3)
-#'
-#' @details If the distribution is \code{\link{Binomial}},
-#'   \ifelse{html}{\out{theta}}{\eqn{theta}} denotes the rate difference between
-#'   intervention and control group.
-#'   Then, the mean is assumed to be
-#'   \ifelse{html}{\out{&radic; n  theta}}{\eqn{\sqrt{n} theta}}.
+#' probability_density_function(ANOVA(3), 1, 30, get_tau_ANOVA(c(0.3, 0.4, 0.7, 0.2)))
 #'
 #' @rdname probability_density_function
 #' @export
 setMethod("probability_density_function", signature("NestedModels", "numeric", "numeric", "numeric"),
           function(dist, x, n, theta, ...) {
-              return(stats::df(x, df1 = dist@p_outer - dist@p_inner, df2 = n - dist@p_outer,  ncp = n * theta))
+              n <- n * (p_outer - p_inner + 1)
+              ret <- x
+              ret[x==Inf] <- 0
+              ret[x==-Inf] <- 0
+              ret[!is.infinite(x)] <- stats::df(x[!is.infinite(x)],
+                                                df1 = dist@p_outer - dist@p_inner,
+                                                df2 = max(1, n - dist@p_outer),
+                                                ncp = n * theta)
+              return(ret)
           })
 
 
 #' @examples
-#' cumulative_distribution_function(Binomial(.1, TRUE), 1, 50, .3)
-#'
-#' @details If the distribution is \code{\link{Binomial}},
-#'   \ifelse{html}{\out{theta}}{\eqn{theta}} denotes the rate difference between
-#'   intervention and control group.
-#'   Then, the mean is assumed to be
-#'   \ifelse{html}{\out{&radic; n  theta}}{\eqn{\sqrt{n} theta}}.
+#' probability_density_function(ANOVA(3), 1, 30, get_tau_ANOVA(c(0.3, 0.4, 0.7, 0.2)))
 #'
 #' @rdname cumulative_distribution_function
 #' @export
 setMethod("cumulative_distribution_function", signature("NestedModels", "numeric", "numeric", "numeric"),
           function(dist, x, n, theta, ...) {
+              n <- n * (p_outer - p_inner + 1)
               ret <- x
               ret[x==Inf] <- 1
               ret[x==-Inf] <- 0
-              ret[!is.infinite(x)] <- stats::pf(x, df1 = dist@p_outer - dist@p_inner, df2 = n - dist@p_outer,  ncp = n * theta)
-              #cat('df1: ', dist@p_outer - dist@p_inner, ' df2: ', n - dist@p_outer, ' ncp: ', n * theta, ' n: ', n, '\n')
+              ret[!is.infinite(x)] <- stats::pf(x[!is.infinite(x)],
+                                                df1 = dist@p_outer - dist@p_inner,
+                                                df2 = max(1, n - dist@p_outer),
+                                                ncp = n * theta)
               return(ret)
         })
 
 
-#' @param probs vector of probabilities
-#' @rdname BinomialDataDistribution-class
+#' @param object object of class \code{NestedModels}
+#' @param nsim number of simulation runs
+#' @param seed random seed
+#'
+#' @rdname NestedModels-class
 #' @export
 setMethod("quantile", signature("NestedModels"),
           function(x, probs, n, theta, ...) { # must be x to conform with generic
-              return(stats::qf(probs, df1 = x@p_outer - x@p_inner, df2 = n - x@p_outer,  ncp = n * theta))
+              n <- n * (p_outer - p_inner + 1)
+              return(stats::qf(probs, df1 = x@p_outer - x@p_inner, df2 = max(1, n - x@p_outer),  ncp = n * theta))
           })
 
 
 
-#' @details Note that \code{simulate} for class \code{Binomial} simulates the
-#'    normal approximation of the test statistic.
+#' @rdname NestedModels-class
 #'
-#' @rdname BinomialDataDistribution-class
-#'
-#' @param object object of class \code{Binomial}
+#' @param object object of class \code{NestedModels}
 #' @param nsim number of simulation runs
 #' @param seed random seed
 #'
@@ -139,7 +149,8 @@ setMethod("quantile", signature("NestedModels"),
 setMethod("simulate", signature("NestedModels", "numeric"),
           function(object, nsim, n, theta, seed = NULL, ...) {
               if (!is.null(seed)) set.seed(seed)
-              return(stats::rf(nsim, df1 = x@p_outer - x@p_inner, df2 = n - x@p_outer,  ncp = n * theta))
+              n <- n * (p_outer - p_inner + 1)
+              return(stats::rf(nsim, df1 = x@p_outer - x@p_inner, df2 = max(1, n - x@p_outer),  ncp = n * theta))
 })
 
 setMethod("print", signature('NestedModels'), function(x, ...) {

@@ -60,7 +60,7 @@ ChiSquared <- function(df, multiplier = 1) {
 #' When we test for homogeneity of rates in a k-armed trial with binary endpoints, the test statistic is
 #' chi-squared distributed with \eqn{k-1} degrees of freedom under the null. Under the alternative, the statistic is chi-squared distributed with a
 #' non-centrality parameter \eqn{\lambda}. The function \code{get_tau_Pearson2xk} then computes \eqn{\tau}, such that \eqn{\lambda} is given
-#' as \eqn{n/k \cdot \tau}, where \eqn{n} is the number of subjects per group. In \code{adoptr}, \eqn{\tau} is used in the same way as \eqn{\theta}
+#' as \eqn{n \cdot \tau}, where \eqn{n} is the number of subjects per group. In \code{adoptr}, \eqn{\tau} is used in the same way as \eqn{\theta}
 #' in the case of the normally distributed test statistic.
 #'
 #' @param n_groups number of groups considered for testing procedure
@@ -89,7 +89,7 @@ get_tau_Pearson2xK <- function(p_vector) {
     n_groups <- length(p_vector)
     mean_p <- mean(p_vector)
     deltas <- p_vector - mean_p
-    tau <- (sum(deltas^2)/n_groups - mean(deltas)^2) / (mean_p * (1-mean_p))
+    tau <- (sum(deltas^2)/n_groups) / (mean_p * (1-mean_p))
     tau
 }
 
@@ -101,7 +101,7 @@ get_tau_Pearson2xK <- function(p_vector) {
 #' The function \code{get_tau_ZSquared} computes the factor \eqn{\tau=(\mu/\sigma)^2}, such that
 #' \eqn{\tau} is the equivalent of \eqn{\theta} in the normally distributed case.
 #'
-#' @param two_armed logical indicating if a two-aremd trial is regarded
+#' @param two_armed logical indicating if a two-armed trial is regarded
 #'
 #' @examples
 #' zsquared <- ZSquared(FALSE)
@@ -164,12 +164,9 @@ setMethod("quantile", signature("ChiSquared"),
 
 
 
-#' @details Note that \code{simulate} for class \code{ChiSquared} simulates the
-#'    normal approximation of the test statistic.
-#'
 #' @rdname ChiSquaredDataDistribution-class
 #'
-#' @param object object of class \code{Binomial}
+#' @param object object of class \code{ChiSquared}
 #' @param nsim number of simulation runs
 #' @param seed random seed
 #'

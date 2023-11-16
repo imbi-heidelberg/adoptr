@@ -100,6 +100,7 @@ get_tau_Pearson2xK <- function(p_vector) {
 #' \eqn{\sigma^2}. \eqn{Z^2} is chi-squared distributed with \eqn{1} degree of freedom and non-centrality parameter \eqn{(\mu/\sigma)^2}.
 #' The function \code{get_tau_ZSquared} computes the factor \eqn{\tau=(\mu/\sigma)^2}, such that
 #' \eqn{\tau} is the equivalent of \eqn{\theta} in the normally distributed case.
+#' The square of a normal distribution \eqn{Z^2} can be used for two-sided hypothesis testing.
 #'
 #' @param two_armed logical indicating if a two-armed trial is regarded
 #'
@@ -174,7 +175,7 @@ setMethod("quantile", signature("ChiSquared"),
 setMethod("simulate", signature("ChiSquared", "numeric"),
           function(object, nsim, n, theta, seed = NULL, ...) {
               if (!is.null(seed)) set.seed(seed)
-              return(stats::rchisq(nsim, df = dist@df, ncp = n / dist@multiplier * theta))
+              return(stats::rchisq(nsim, df = object@df, ncp = n / object@multiplier * theta))
 })
 
 setMethod("print", signature('ChiSquared'), function(x, ...) {

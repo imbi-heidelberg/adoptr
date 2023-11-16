@@ -44,8 +44,11 @@ setClass("ANOVA", contains = "NestedModels")
 #' @rdname NestedModels-class
 #' @export
 NestedModels <- function(p_inner, p_outer) {
-    if (any(p_inner < 0, p_outer < 0))
-        stop("Number of parameters may not be less than 0.")
+    if (any(p_inner < 0 || abs(p_inner - round(p_inner)) > sqrt(.Machine$double.eps),
+        p_outer < 0 || abs(p_outer - round(p_outer)) > sqrt(.Machine$double.eps))){
+        stop("The numbers of groups must be natural numbers.")
+    }
+
     new("NestedModels", p_inner = p_inner, p_outer = p_outer)
 }
 
@@ -94,7 +97,7 @@ get_tau_ANOVA <- function(means, common_sd = 1) {
 #' @export
 setMethod("probability_density_function", signature("NestedModels", "numeric", "numeric", "numeric"),
           function(dist, x, n, theta, ...) {
-              n <- n * (p_outer - p_inner + 1)
+              n <- n * (dist@p_outer - dist@p_inner + 1)
               ret <- x
               ret[x==Inf] <- 0
               ret[x==-Inf] <- 0
@@ -113,7 +116,7 @@ setMethod("probability_density_function", signature("NestedModels", "numeric", "
 #' @export
 setMethod("cumulative_distribution_function", signature("NestedModels", "numeric", "numeric", "numeric"),
           function(dist, x, n, theta, ...) {
-              n <- n * (p_outer - p_inner + 1)
+              n <- n * (dist@p_outer - dist@p_inner + 1)
               ret <- x
               ret[x==Inf] <- 1
               ret[x==-Inf] <- 0
@@ -133,7 +136,7 @@ setMethod("cumulative_distribution_function", signature("NestedModels", "numeric
 #' @export
 setMethod("quantile", signature("NestedModels"),
           function(x, probs, n, theta, ...) { # must be x to conform with generic
-              n <- n * (p_outer - p_inner + 1)
+              n <- n * (x@p_outer - x@p_inner + 1)
               return(stats::qf(probs, df1 = x@p_outer - x@p_inner, df2 = max(1, n - x@p_outer),  ncp = n * theta))
           })
 
@@ -149,8 +152,8 @@ setMethod("quantile", signature("NestedModels"),
 setMethod("simulate", signature("NestedModels", "numeric"),
           function(object, nsim, n, theta, seed = NULL, ...) {
               if (!is.null(seed)) set.seed(seed)
-              n <- n * (p_outer - p_inner + 1)
-              return(stats::rf(nsim, df1 = x@p_outer - x@p_inner, df2 = max(1, n - x@p_outer),  ncp = n * theta))
+              n <- n * (object@p_outer - object@p_inner + 1)
+              return(stats::rf(nsim, df1 = object@p_outer - object@p_inner, df2 = max(1, n - object@p_outer),  ncp = n * theta))
 })
 
 setMethod("print", signature('NestedModels'), function(x, ...) {
@@ -161,7 +164,7 @@ setMethod("print", signature('NestedModels'), function(x, ...) {
 
 setMethod("print", signature('ANOVA'), function(x, ...) {
     glue::glue(
-        "{class(x)[1]}<n_groups={x@p_inner}>"
+        "{class(x)[1]}<n_groups={x@p_outer}>"
     )
 })
 

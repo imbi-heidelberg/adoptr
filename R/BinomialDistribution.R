@@ -118,8 +118,8 @@ setMethod("quantile", signature("Binomial"),
               # nocov end
               sigma_A <- sqrt(rate_intervention * (1 - rate_intervention) +
                                   ifelse(x@two_armed, x@rate_control * (1 - x@rate_control), 0))
-              p_0     <- (dist@rate_control + ifelse(dist@two_armed, rate_intervention, dist@rate_control)) / 2
-              sigma_0 <- ifelse(dist@two_armed, sqrt(2 * p_0 * (1 - p_0)), sqrt(p_0 * (1 - p_0)))
+              p_0     <- (x@rate_control + ifelse(x@two_armed, rate_intervention, x@rate_control)) / 2
+              sigma_0 <- ifelse(x@two_armed, sqrt(2 * p_0 * (1 - p_0)), sqrt(p_0 * (1 - p_0)))
 
               return(stats::qnorm(probs, mean = sqrt(n) * theta / sigma_0, sd = sigma_A / sigma_0))
           })
@@ -144,8 +144,8 @@ setMethod("simulate", signature("Binomial", "numeric"),
               # nocov end
               sigma_A <- sqrt(rate_intervention * (1 - rate_intervention) +
                                   ifelse(object@two_armed, object@rate_control * (1 - object@rate_control), 0))
-              p_0     <- (dist@rate_control + ifelse(dist@two_armed, rate_intervention, dist@rate_control)) / 2
-              sigma_0 <- ifelse(dist@two_armed, sqrt(2 * p_0 * (1 - p_0)), sqrt(p_0 * (1 - p_0)))
+              p_0     <- (object@rate_control + ifelse(object@two_armed, rate_intervention, object@rate_control)) / 2
+              sigma_0 <- ifelse(object@two_armed, sqrt(2 * p_0 * (1 - p_0)), sqrt(p_0 * (1 - p_0)))
 
               if (!is.null(seed)) set.seed(seed)
 

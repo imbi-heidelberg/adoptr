@@ -99,28 +99,32 @@ minimize <- function(
     if(check_constraints){
         new_des <- update(initial_design, res$solution)
         for(constr in subject_to@unconditional_constraints){
-            if(constr@rhs==0){
-                if(evaluate(constr@score,new_des)-constr@rhs>=0.001){
-                    warning(sprintf("The following constraint could not be fulfilled: %s (absolute tolerance: %s)", utils::capture.output(show(constr)), format(0.001)))
+            if(constr@rhs == 0){
+                if(evaluate(constr@score, new_des) - constr@rhs >= 0.001){
+                    warning(sprintf("The following constraint could not be fulfilled: %s (absolute tolerance: %s)",
+                                    utils::capture.output(show(constr)), format(0.001)))
                 }
             }
             else{
-                if(evaluate(constr@score,new_des)-constr@rhs>=min(0.01*abs(constr@rhs),0.49)){
-                    warning(sprintf("The following constraint could not be fulfilled: %s (relative tolerance: %s)", utils::capture.output(show(constr)), format(0.01)))
+                if(evaluate(constr@score, new_des) - constr@rhs >= min(0.01 * abs(constr@rhs), 0.49)){
+                    warning(sprintf("The following constraint could not be fulfilled: %s (relative tolerance: %s)",
+                                    utils::capture.output(show(constr)), format(0.01)))
                 }
             }
 
         }
         for(constr in subject_to@conditional_constraints){
-            grid <- seq(new_des@c1f,new_des@c1e,length.out=10)
-            if(constr@rhs==0){
-                if(any(evaluate(constr@score,new_des,grid)-constr@rhs>=0.001)){
-                    warning(sprintf("The following constraint could not be fulfilled: %s (absolute tolerance: %s)", utils::capture.output(show(constr)), format(0.001)))
+            grid <- seq(new_des@c1f, new_des@c1e, length.out = 10)
+            if(constr@rhs == 0){
+                if(any(evaluate(constr@score, new_des, grid) - constr@rhs >= 0.001)){
+                    warning(sprintf("The following constraint could not be fulfilled: %s (absolute tolerance: %s)",
+                                    utils::capture.output(show(constr)), format(0.001)))
                 }
             }
             else{
-                if(any(evaluate(constr@score,new_des,grid)-constr@rhs>=min(0.01*abs(constr@rhs),0.49))){
-                    warning(sprintf("The following constraint could not be fulfilled: %s (relative tolerance: %s)", utils::capture.output(show(constr)), format(0.01)))
+                if(any(evaluate(constr@score, new_des, grid) - constr@rhs >= min(0.01 * abs(constr@rhs), 0.49))){
+                    warning(sprintf("The following constraint could not be fulfilled: %s (relative tolerance: %s)",
+                                    utils::capture.output(show(constr)), format(0.01)))
                 }
             }
 
@@ -176,6 +180,8 @@ print.adoptrOptimizationResult <- function(x, ...) {
 #' if c2 is constant or ce=c, where the null hypothesis is rejected if w1 Z1+w2 Z2>c.
 #' By specifying ce, it's clear that the boundaries are not Pocock-boundaries anymore, so the type I error
 #' constraint may not be fulfilled.
+#' IMPORTANT: When using the t-distribution or ANOVA, the design does probably
+#' not keep the type I and type II error, only approximate designs are returned.
 #'
 #' @examples
 #' init <- get_initial_design(
@@ -211,14 +217,20 @@ get_initial_design <- function(theta,
     type_design <- match.arg(type_design)
 
     #overwrite the distributions that depend on n under the null
-    if(is(dist,"Student")){
+    if(is(dist, "Student")){
         dist <- Normal(two_armed = dist@two_armed)
+    }
+
+    #default value for n when computing rejection boundaries. Only matters for ANOVA
+    n_H0 <- 1
+    if(is(dist, "NestedModels")){
+        n_H0 <- 30
     }
 
     #check that theta is correct
     theta_null <- 0
     theta2 <- theta
-    if(is(dist,"Survival")){
+    if(is(dist, "Survival")){
         theta2 <- log(theta)
         theta_null <- 1
     }
@@ -227,11 +239,11 @@ get_initial_design <- function(theta,
 
     #compute cf depending on the current distribution
     if(missing(cf)){
-        cf <- quantile(dist,0.5,1,theta_null)
+        cf <- quantile(dist, 0.5, n_H0, theta_null)
     }
 
     #raise warnings if c2 or n2 are mistakenly specified
-    if(type_design=="group-sequential" || type_design == "one-stage"){
+    if(type_design == "group-sequential" || type_design == "one-stage"){
         if(type_design == "one-stage"){
             if(!missing(type_c2)){
                 warning("The type of the c2 function is not relevant for one-stage designs.")
@@ -244,100 +256,112 @@ get_initial_design <- function(theta,
     type_n2 <- match.arg(type_n2)
 
     #rename some variables
-    power <- 1-beta
+    power <- 1 - beta
     w1 <- weight
-    w2 <- sqrt(1-w1**2)
+    w2 <- sqrt(1 - w1**2)
 
     #check for valid inputs
     if (alpha <= 0 || alpha >= 1 || beta <= 0 || beta >= 1 || info_ratio <0 || info_ratio > 1 || weight >= 1 || weight <= 0){
         stop("alpha, beta, information ratio or weightsmust be in (0, 1)!")}
     if(!missing(ce)){
-        if (ce<cf) {
+        if (ce < cf) {
             stop("Efficacy boundary must not be smaller than futility boundary!")
         }
     }
 
 
     #c2 and n2 type not relevant for one-stage designs, so we first finish that case
-    if(type_design=="one-stage"){
-        ce <- quantile(dist,1-alpha,1,theta_null)
+    if(type_design == "one-stage"){
+        ce <- quantile(dist, 1 - alpha, n_H0, theta_null)
         find_n <- function(n){
-            (1-cumulative_distribution_function(dist,ce,n,theta))-power
+            (1 - cumulative_distribution_function(dist, ce, n, theta)) - power
         }
-        n <- stats::uniroot(find_n, interval=c(0,1000),extendInt="upX")$root
-        ifelse(is(dist,"Survival"),return(OneStageDesign(n,ce,event_rate=dist@event_rate)),
-               return(OneStageDesign(n,ce)))
+        n <- stats::uniroot(find_n, interval=c(0,1000), extendInt="upX")$root
+        ifelse(is(dist,"Survival"), return(OneStageDesign(n, ce, event_rate=dist@event_rate)),
+               return(OneStageDesign(n, ce)))
     }
 
     #case 1: constant c2 function
-    if(type_c2=="constant"){
+    if(type_c2 == "constant"){
         #we assume ce=c2
         if(missing(ce)){
             find_c <- function(c){
                 integrand_c <- function(z){
-                    (1-cumulative_distribution_function(dist,c,1,theta_null))*probability_density_function(dist,z,1,theta_null)
+                    (1 - cumulative_distribution_function(dist, c, n_H0, theta_null)) *
+                        probability_density_function(dist, z, n_H0, theta_null)
                 }
-                (1-cumulative_distribution_function(dist,c,1,theta_null))+stats::integrate(integrand_c,lower=cf,upper=c)$value-alpha
+                (1 - cumulative_distribution_function(dist, c, n_H0, theta_null)) +
+                    stats::integrate(integrand_c,lower = cf,upper = c)$value - alpha
             }
-            c2 <- stats::uniroot(find_c, interval=c(cf,5),extendInt="yes")$root
+            c2 <- stats::uniroot(find_c, interval = c(cf, 5), extendInt = "yes")$root
             ce <- c2
         }
         else{
             find_c2 <- function(c){
                 integrand_c <- function(z){
-                    (1-cumulative_distribution_function(dist,c,1,theta_null))*probability_density_function(dist,z,1,theta_null)
+                    (1 - cumulative_distribution_function(dist, c, n_H0, theta_null)) *
+                        probability_density_function(dist, z, n_H0, theta_null)
                 }
-                (1-cumulative_distribution_function(dist,ce,1,theta_null))+stats::integrate(integrand_c,lower=cf,upper=ce)$value-alpha
+                (1 - cumulative_distribution_function(dist, ce, n_H0, theta_null)) +
+                    stats::integrate(integrand_c, lower = cf, upper = ce)$value - alpha
             }
-            c_try <- try(stats::uniroot(find_c2,interval=c(cf,5),extendInt="yes")$root,silent=TRUE)
+            c_try <- try(stats::uniroot(find_c2, interval = c(cf, 5), extendInt="yes")$root,
+                         silent=TRUE)
             if("try-error" %in% class(c_try)){
                 warning("Type I error constraint cannot be fulfilled.")
                 find_c <- function(c){
                     integrand_c <- function(z){
-                        (1-cumulative_distribution_function(dist,c,1,theta_null))*probability_density_function(dist,z,1,theta_null)
+                        (1 - cumulative_distribution_function(dist, c, n_H0, theta_null)) *
+                            probability_density_function(dist, z, n_H0, theta_null)
                     }
-                    (1-cumulative_distribution_function(dist,c,1,theta_null))+stats::integrate(integrand_c,lower=cf,upper=c)$value-alpha
+                    (1 - cumulative_distribution_function(dist, c, n_H0, theta_null)) +
+                        stats::integrate(integrand_c, lower = cf, upper = c)$value - alpha
                 }
-                c2 <- stats::uniroot(find_c, interval=c(cf,5),extendInt="yes")$root
+                c2 <- stats::uniroot(find_c, interval = c(cf, 5), extendInt="yes")$root
             }
             else{
-                c2 <- stats::uniroot(find_c2, interval=c(cf,5),extendInt="yes")$root
+                c2 <- stats::uniroot(find_c2, interval = c(cf, 5),extendInt="yes")$root
             }
         }
     }
 
     #case2: linear decreasing c2 function by inverse normal combination
-    if(type_c2=="linear_decreasing"){
+    if(type_c2 == "linear_decreasing"){
         #we assume ce=c*, where c* is the boundary for Z*=w_1*Z_1+w_2*Z_2
         if(missing(ce)){
             find_ce <- function(c){
                 integrand_ce <- function(z){
-                    (1-cumulative_distribution_function(dist,(c-w1*z)/sqrt(1-w1**2),1,theta_null))*probability_density_function(dist,z,1,theta_null)
+                    (1 - cumulative_distribution_function(dist, (c-w1*z)/sqrt(1-w1**2), n_H0, theta_null)) *
+                        probability_density_function(dist, z, n_H0, theta_null)
                 }
-                (1-cumulative_distribution_function(dist,c,1,theta_null))+stats::integrate(integrand_ce,lower=cf,upper=c)$value-alpha
+                (1 - cumulative_distribution_function(dist, c, n_H0, theta_null)) +
+                    stats::integrate(integrand_ce, lower = cf, upper = c)$value - alpha
             }
-            c <- stats::uniroot(find_ce,interval=c(cf,5),extendInt="yes")$root
+            c <- stats::uniroot(find_ce, interval=c(cf, 5), extendInt = "yes")$root
             ce <- c
         }
         else{
             find_ce <- function(c){
                 integrand_ce <- function(z){
-                    (1-cumulative_distribution_function(dist,(c-w1*z)/sqrt(1-w1**2),1,theta_null))*probability_density_function(dist,z,1,theta_null)
+                    (1 - cumulative_distribution_function(dist, (c-w1*z)/sqrt(1-w1**2), n_H0, theta_null)) *
+                        probability_density_function(dist, z, n_H0, theta_null)
                 }
-                (1-cumulative_distribution_function(dist,ce,1,theta_null))+stats::integrate(integrand_ce,lower=cf,upper=ce)$value-alpha
+                (1 - cumulative_distribution_function(dist, ce, n_H0, theta_null)) +
+                    stats::integrate(integrand_ce,lower = cf, upper = ce)$value - alpha
             }
-            c_try <- try(stats::uniroot(find_ce,interval=c(cf,5),extendInt="yes")$root,silent=TRUE)
+            c_try <- try(stats::uniroot(find_ce, interval = c(cf, 5), extendInt="yes")$root,
+                         silent=TRUE)
             if("try-error" %in% class(c_try)){
                 warning("Type I error constraint cannot be fulfilled.")
                 c <- ce
             }
             else{
-                c <- stats::uniroot(find_ce,interval=c(cf,5),extendInt="yes")$root}
+                c <- stats::uniroot(find_ce, interval=c(cf, 5), extendInt="yes")$root}
         }
 
         #we need to evaluate this function at each pivot
         critical_values <- function(z){
-            (c-w1*z)/sqrt(1-w1**2)
+            (c - w1 * z) / sqrt(1 - w1**2)
         }
         oldnodes <- GaussLegendreRule(as.integer(order))$nodes
         h <- (ce - cf) / 2
@@ -348,111 +372,124 @@ get_initial_design <- function(theta,
     }
 
     # for group-sequential designs, n2 is constant. We choose n so that the toer and tter are not exceeded
-    if(type_design=="group-sequential"){
-        if(type_c2=="constant"){
+    if(type_design == "group-sequential"){
+        if(type_c2 == "constant"){
             find_n <- function(n){
                 integrand_n <- function(z){
-                    (1-cumulative_distribution_function(dist,c2,(1-info_ratio)*n,theta))*
-                        probability_density_function(dist,z,(info_ratio)*n,theta)
+                    (1 - cumulative_distribution_function(dist, c2, (1 - info_ratio) * n, theta)) *
+                        probability_density_function(dist, z, (info_ratio) * n, theta)
                 }
-                (1-cumulative_distribution_function(dist,ce,info_ratio*n,theta))+stats::integrate(integrand_n,cf,ce)$value-power
+                (1 - cumulative_distribution_function(dist, ce, info_ratio * n, theta)) +
+                    stats::integrate(integrand_n, cf, ce)$value - power
             }
         }
-        if(type_c2=="linear_decreasing"){
+        if(type_c2 == "linear_decreasing"){
             find_n <- function(n){
                 integrand_n <- function(z){
-                    (1-cumulative_distribution_function(dist,(c-w1*z)/sqrt(1-w1**2),(1-info_ratio)*n,theta))*
-                        probability_density_function(dist,z,(info_ratio)*n,theta)
+                    (1 - cumulative_distribution_function(dist, (c-w1*z)/sqrt(1-w1**2), (1 - info_ratio) * n, theta))*
+                        probability_density_function(dist, z, (info_ratio)*n, theta)
                 }
-                (1-cumulative_distribution_function(dist,ce,info_ratio*n,theta))+stats::integrate(integrand_n,cf,ce)$value-power
+                (1 - cumulative_distribution_function(dist, ce, info_ratio * n, theta)) +
+                    stats::integrate(integrand_n, cf, ce)$value - power
             }
         }
         #choose n1 and n2 according to information ratio
-        n <- stats ::uniroot(find_n,interval = c(0,1000),extendInt = "upX")$root
-        n1 <- info_ratio*n
-        n2 <- (1-info_ratio)*n
+        n <- stats ::uniroot(find_n, interval = c(0, 1000), extendInt = "upX")$root
+        n1 <- info_ratio * n
+        n2 <- (1-info_ratio) * n
         #if(length(c2)!=1) n2 <- rep(n2,order)
 
-        if(is(dist,"Survival")) design <- GroupSequentialDesign(n1,cf,ce,n2,c2,order=order, event_rate=dist@event_rate)
-        else design <-  GroupSequentialDesign(n1,cf,ce,n2,c2,order=order)
+        if(is(dist, "Survival")) design <- GroupSequentialDesign(n1, cf, ce, n2, c2,
+                                                                 order = order,
+                                                                 event_rate = dist@event_rate)
+        else design <-  GroupSequentialDesign(n1, cf, ce, n2, c2, order = order)
         return(design)
     }
 
     #for two-stage designs, the four different n2-designs need to be considered
-    if(type_design=="two-stage"){
+    if(type_design == "two-stage"){
         #constant n2 is the same as group-sequential, but returns a two-stage instead of a group sequential design
-        if(type_n2=="constant"){
-            if(type_c2=="constant"){
+        if(type_n2 == "constant"){
+            if(type_c2 == "constant"){
                 find_n <- function(n){
                     integrand_n <- function(z){
-                        (1-cumulative_distribution_function(dist,c2,(1-info_ratio)*n,theta))*
-                            probability_density_function(dist,z,(info_ratio)*n,theta)
+                        (1 - cumulative_distribution_function(dist, c2, (1 - info_ratio) * n, theta)) *
+                            probability_density_function(dist, z, (info_ratio) * n, theta)
                     }
-                    (1-cumulative_distribution_function(dist,ce,info_ratio*n,theta))+stats::integrate(integrand_n,cf,ce)$value-power
+                    (1 - cumulative_distribution_function(dist, ce, info_ratio * n, theta)) +
+                        stats::integrate(integrand_n, cf, ce)$value - power
                 }
             }
-            if(type_c2=="linear_decreasing"){
+            if(type_c2 == "linear_decreasing"){
                 find_n <- function(n){
                     integrand_n <- function(z){
-                        (1-cumulative_distribution_function(dist,(c-w1*z)/sqrt(1-w1**2),(1-info_ratio)*n,theta))*
-                            probability_density_function(dist,z,(info_ratio)*n,theta)
+                        (1 - cumulative_distribution_function(dist, (c-w1*z)/sqrt(1-w1**2), (1 - info_ratio) * n, theta)) *
+                            probability_density_function(dist, z, (info_ratio) * n, theta)
                     }
-                    (1-cumulative_distribution_function(dist,ce,info_ratio*n,theta))+stats::integrate(integrand_n,cf,ce)$value-power
+                    (1 - cumulative_distribution_function(dist, ce, info_ratio * n, theta)) +
+                        stats::integrate(integrand_n, cf, ce)$value - power
                 }
             }
             #choose n1 and n2 according to information ratio
-            n <- stats ::uniroot(find_n,interval = c(0,1000),extendInt = "upX")$root
-            n1 <- info_ratio*n
-            n2 <- (1-info_ratio)*n
-            if(length(c2)!=1) n2 <- rep(n2,order)
+            n <- stats ::uniroot(find_n, interval = c(0, 1000), extendInt = "upX")$root
+            n1 <- info_ratio * n
+            n2 <- (1 - info_ratio) * n
+            if(length(c2) != 1) n2 <- rep(n2, order)
 
 
-            if(is(dist,"Survival")) design <- TwoStageDesign(n1,cf,ce,n2,c2,order=order, event_rate=dist@event_rate)
-            else design <-  TwoStageDesign(n1,cf,ce,n2,c2,order=order)
+            if(is(dist,"Survival")) design <- TwoStageDesign(n1, cf, ce, n2, c2,
+                                                             order = order,
+                                                             event_rate = dist@event_rate)
+            else design <-  TwoStageDesign(n1, cf, ce, n2, c2, order = order)
             return(design)
         }
 
         #the optimal n2 function is evaluated at each pivot and therefore, it is not constant. The first stage
         #sample size is determined like before.
-        if(type_n2=="optimal" || type_n2=="linear_increasing" || type_n2=="linear_decreasing"){
-            if(length(c2)==1) c2 <- rep(c2,order)
+        if(type_n2 == "optimal" || type_n2=="linear_increasing" || type_n2=="linear_decreasing"){
+            if(length(c2) == 1) c2 <- rep(c2,order)
 
-            if(type_c2=="constant"){
+            if(type_c2 == "constant"){
                 find_n <- function(n){
                     integrand_n <- function(z){
-                        (1-cumulative_distribution_function(dist,c2,(1-info_ratio)*n,theta))*
-                            probability_density_function(dist,z,(info_ratio)*n,theta)
+                        (1 - cumulative_distribution_function(dist, c2, (1 - info_ratio) * n, theta)) *
+                            probability_density_function(dist, z, (info_ratio) * n, theta)
                     }
-                    (1-cumulative_distribution_function(dist,ce,info_ratio*n,theta))+stats::integrate(integrand_n,cf,ce)$value-power
+                    (1 - cumulative_distribution_function(dist, ce, info_ratio * n, theta)) +
+                        stats::integrate(integrand_n, cf, ce)$value - power
                 }
             }
 
-            if(type_c2=="linear_decreasing"){
+            if(type_c2 == "linear_decreasing"){
                 #first, find the n1 sample size. We use the same sample size as we have under constant n2-function
                 find_n <- function(n){
                     integrand_n <- function(z){
-                        (1-cumulative_distribution_function(dist,(c-w1*z)/sqrt(1-w1**2),(1-info_ratio)*n,theta))*
-                            probability_density_function(dist,z,(info_ratio)*n,theta)
+                        (1 - cumulative_distribution_function(dist, (c-w1*z)/sqrt(1-w1**2), (1 - info_ratio) * n, theta)) *
+                            probability_density_function(dist, z, (info_ratio) * n, theta)
                     }
-                    (1-cumulative_distribution_function(dist,ce,info_ratio*n,theta))+stats::integrate(integrand_n,cf,ce)$value-power
+                    (1 - cumulative_distribution_function(dist, ce, info_ratio * n, theta)) +
+                        stats::integrate(integrand_n, cf, ce)$value - power
                 }
             }
             n <- stats ::uniroot(find_n,interval = c(0,1000),extendInt = "upX")$root
-            n1 <- info_ratio*n
+            n1 <- info_ratio * n
 
             #find the right value of the n2 function at each pivot
             find_n2 <- function(n2,pivot){
                 integrand_n2 <- function(z){
-                    (1-cumulative_distribution_function(dist,pivot,n2,theta))*
-                        probability_density_function(dist,z,n1,theta)
+                    (1 - cumulative_distribution_function(dist, pivot, n2, theta)) *
+                        probability_density_function(dist, z, n1, theta)
                 }
-                (1-cumulative_distribution_function(dist,ce,n1,theta))+
-                    stats::integrate(integrand_n2,cf,ce)$value-power
+                (1 - cumulative_distribution_function(dist, ce, n1, theta)) +
+                    stats::integrate(integrand_n2, cf, ce)$value - power
             }
-            n2 <- rep(0.0,order)
+            n2 <- rep(0.0, order)
             for(i in (1:order)){
-                n_try <- suppressWarnings(try(stats::uniroot(f=find_n2,interval=c(0,1000),extendInt="upX",
+                n_try <- suppressWarnings(try(stats::uniroot(f = find_n2,
+                                                             interval = c(0, 1000),
+                                                             extendInt="upX",
                                                              pivot=c2[i])$root,silent=TRUE))
+
                 if("try-error" %in% class(n_try) & type_n2 == "optimal"){
                     stop("Optimal n2 function cannot be calculated. Please reduce efficacy boundary or the information ratio.") # nocov
                 }
@@ -463,65 +500,75 @@ get_initial_design <- function(theta,
                     n2[i] <- 0.1 # nocov
                 }
                 else{
-                    n2[i] <- stats::uniroot(f=find_n2,interval=c(0,1000),extendInt="upX",
-                                            pivot=c2[i])$root
+                    n2[i] <- stats::uniroot(f = find_n2, interval = c(0, 1000), extendInt = "upX",
+                                            pivot = c2[i])$root
                 }
             }
 
-            if(type_n2=="optimal"){
-                if(is(dist,"Survival")) design <- TwoStageDesign(n1,cf,ce,n2,c2, event_rate=dist@event_rate)
-                else design <-  TwoStageDesign(n1,cf,ce,n2,c2)
+            if(type_n2 == "optimal"){
+                if(is(dist, "Survival")) design <- TwoStageDesign(n1, cf, ce, n2, c2,
+                                                                  event_rate = dist@event_rate)
+                else design <-  TwoStageDesign(n1, cf, ce, n2, c2)
                 return(design)
             }
 
-            if(type_n2=="linear_decreasing"){
-                interim_design <- TwoStageDesign(n1,cf,ce,n2,c2)
+            if(type_n2 == "linear_decreasing"){
+                interim_design <- TwoStageDesign(n1, cf, ce, n2, c2)
                 if(missing(slope)){
                     #find the minimum and maximal values of n2
-                    n2_min <- n2(interim_design,ce)
-                    n2_max <- n2(interim_design,cf)
+                    n2_min <- n2(interim_design, ce)
+                    n2_max <- n2(interim_design, cf)
 
                     #compute the slope of n2 function
-                    slope <- (n2_min-n2_max)/(ce-cf)
-                    if(slope==0){
-                        slope <- -n2_max/(ce-cf) # nocov
+                    slope <- (n2_min - n2_max) / (ce - cf)
+                    if(slope == 0){
+                        slope <- -n2_max / (ce - cf) # nocov
                     }
                 }
 
-                if(slope>0){
+                if(slope > 0){
                     stop("For linear_decreasing, slope needs to be smaller zero")
                 }
-                start_value <- -slope*ce+.1
+                start_value <- -slope * ce + .1
 
                 #find y-intercept of n2 function
-                find_y_intercept <- function(b,slope){
+                find_y_intercept <- function(b, slope){
                     integrand_b <- function(z){
-                        (1-cumulative_distribution_function(dist,c2(interim_design,z),slope*z+b,theta))*
+                        (1 - cumulative_distribution_function(dist, c2(interim_design, z), slope * z + b, theta)) *
                             probability_density_function(dist,z,n1,theta)
                     }
-                    (1-cumulative_distribution_function(dist,ce,n1,theta))+
-                        stats::integrate(integrand_b,cf,ce)$value-power
+                    (1 - cumulative_distribution_function(dist, ce, n1, theta)) +
+                        stats::integrate(integrand_b, cf, ce)$value - power
                 }
 
-                t <- suppressWarnings(try(stats::uniroot(find_y_intercept,interval=c(start_value,1000),extendInt = "upX",slope=slope)$root,silent=TRUE))
+                t <- suppressWarnings(try(stats::uniroot(find_y_intercept,
+                                                         interval = c(start_value, 1000),
+                                                         extendInt = "upX",
+                                                         slope = slope)$root, silent=TRUE))
                 if("try-error" %in% class(t)){
                     warning("Absolute value of slope too high. It was automatically reduced.")
                 }
                 while(("try-error" %in% class(t))&&(slope<=0)){
-                    slope <- slope+1
-                    start_value <- -slope*ce+.1
-                    t <- suppressWarnings(try(stats::uniroot(find_y_intercept,interval=c(start_value,1000),extendInt = "upX",slope=slope)$root,silent=TRUE))
+                    slope <- slope + 1
+                    start_value <- -slope * ce + .1
+                    t <- suppressWarnings(try(stats::uniroot(find_y_intercept,
+                                                             interval = c(start_value, 1000),
+                                                             extendInt = "upX",
+                                                             slope=slope)$root,silent=TRUE))
                 }
-                if(slope>0){# nocov start
-                    if(is(dist,"Survival")) design <- TwoStageDesign(n1,cf,ce,n2,c2, event_rate=dist@event_rate)
-                    else design <-  TwoStageDesign(n1,cf,ce,n2,c2)
+                if(slope > 0){# nocov start
+                    if(is(dist, "Survival")) design <- TwoStageDesign(n1, cf, ce, n2, c2,
+                                                                      event_rate = dist@event_rate)
+                    else design <-  TwoStageDesign(n1, cf, ce, n2, c2)
                     return(design)# nocov end
                 }
 
-                y_intercept <- stats::uniroot(find_y_intercept,interval=c(start_value,1000),extendInt = "upX",slope=slope)$root
+                y_intercept <- stats::uniroot(find_y_intercept,
+                                              interval = c(start_value, 1000),
+                                              extendInt = "upX",slope=slope)$root
 
                 n2func <- function(z){
-                    slope*z+y_intercept
+                    slope * z + y_intercept
                 }
 
                 oldnodes <- GaussLegendreRule(as.integer(order))$nodes
@@ -530,66 +577,76 @@ get_initial_design <- function(theta,
 
                 #evaluate n2 function at pivots
                 n2 <- n2func(newnodes)
-                if(is(dist,"Survival")) design <- TwoStageDesign(n1,cf,ce,n2,c2, event_rate=dist@event_rate)
-                else design <-  TwoStageDesign(n1,cf,ce,n2,c2)
+                if(is(dist,"Survival")) design <- TwoStageDesign(n1, cf, ce, n2, c2,
+                                                                 event_rate = dist@event_rate)
+                else design <-  TwoStageDesign(n1, cf, ce, n2, c2)
                 return(design)
             }
 
             if(type_n2=="linear_increasing"){
                 #find the minimum and maximal values of n2
-                interim_design <- TwoStageDesign(n1,cf,ce,n2,c2)
+                interim_design <- TwoStageDesign(n1, cf, ce, n2, c2)
                 if(missing(slope)){
                     #find the minimum and maximal values of n2
-                    n2_min <- n2(interim_design,ce)
-                    n2_max <- n2(interim_design,cf)
+                    n2_min <- n2(interim_design, ce)
+                    n2_max <- n2(interim_design, cf)
 
 
                     #compute the slope of n2 function
-                    slope <- (n2_max-n2_min)/(ce-cf)
-                    if(slope==0){
-                        slope <- n2_max/(ce-cf) # nocov
+                    slope <- (n2_max - n2_min) / (ce - cf)
+                    if(slope == 0){
+                        slope <- n2_max / (ce - cf) # nocov
                     }
                 }
-                if(slope<0){
+                if(slope < 0){
                     stop("For linear_increasing, slope needs to be greater zero")
                 }
 
 
                 #find y-intercept of n2 function
-                find_y_intercept <- function(b,slope){
+                find_y_intercept <- function(b, slope){
                     integrand_b <- function(z){
-                        (1-cumulative_distribution_function(dist,c2(interim_design,z),slope*z+b,theta))*
-                            probability_density_function(dist,z,n1,theta)
+                        (1 - cumulative_distribution_function(dist, c2(interim_design,z), slope * z + b, theta)) *
+                            probability_density_function(dist, z, n1, theta)
                     }
-                    (1-cumulative_distribution_function(dist,ce,n1,theta))+
-                        stats::integrate(integrand_b,cf,ce)$value-power
+                    (1 - cumulative_distribution_function(dist, ce, n1, theta)) +
+                        stats::integrate(integrand_b, cf, ce)$value - power
                 }
 
-                start_value <- -slope*cf+.1
+                start_value <- -slope * cf + .1
 
                 #it is possible that the n2 function gets negative what leads to errors,
                 #so we need to reduce the slope to be positive
-                t <- suppressWarnings(try(stats::uniroot(find_y_intercept,interval=c(start_value,1000),extendInt = "upX",slope=slope)$root,silent=TRUE))
+                t <- suppressWarnings(try(stats::uniroot(find_y_intercept,
+                                                         interval = c(start_value, 1000),
+                                                         extendInt = "upX",
+                                                         slope = slope)$root, silent = TRUE))
 
                 if("try-error" %in% class(t)){
                     warning("Absolute value of slope too high. It was automatically reduced.")
                 }
-                while(("try-error" %in% class(t))&&(slope>=0)){
-                    slope <- slope-1
-                    start_value <- -slope*cf+.1
-                    t <- suppressWarnings(try(stats::uniroot(find_y_intercept,interval=c(start_value,1000),extendInt = "upX",slope=slope)$root,silent=TRUE))
+                while(("try-error" %in% class(t)) && (slope >= 0)){
+                    slope <- slope - 1
+                    start_value <- -slope * cf + .1
+                    t <- suppressWarnings(try(stats::uniroot(find_y_intercept,
+                                                             interval = c(start_value, 1000),
+                                                             extendInt = "upX",
+                                                             slope = slope)$root, silent = TRUE))
                 }
 
-                if(slope<0){# nocov start
-                    if(is(dist,"Survival")) design <- TwoStageDesign(n1,cf,ce,n2,c2, event_rate=dist@event_rate)
-                    else design <-  TwoStageDesign(n1,cf,ce,n2,c2)
+                if(slope < 0){# nocov start
+                    if(is(dist, "Survival")) design <- TwoStageDesign(n1, cf, ce, n2, c2,
+                                                                      event_rate = dist@event_rate)
+                    else design <-  TwoStageDesign(n1, cf, ce, n2, c2)
                     return(design)# nocov end
                 }
 
-                y_intercept <- stats::uniroot(find_y_intercept,interval=c(start_value,1000),extendInt = "upX",slope=slope)$root
+                y_intercept <- stats::uniroot(find_y_intercept,
+                                              interval = c(start_value, 1000),
+                                              extendInt = "upX", slope = slope)$root
 
                 n2func <- function(z){
-                    slope*z+y_intercept
+                    slope * z + y_intercept
                 }
 
                 oldnodes <- GaussLegendreRule(as.integer(order))$nodes
@@ -598,8 +655,9 @@ get_initial_design <- function(theta,
 
                 #evaluate n2 function at pivots
                 n2 <- n2func(newnodes)
-                if(is(dist,"Survival")) design <- TwoStageDesign(n1,cf,ce,n2,c2, event_rate=dist@event_rate)
-                else design <-  TwoStageDesign(n1,cf,ce,n2,c2)
+                if(is(dist,"Survival")) design <- TwoStageDesign(n1, cf, ce, n2, c2,
+                                                                 event_rate = dist@event_rate)
+                else design <-  TwoStageDesign(n1, cf, ce, n2, c2)
                 return(design)
             }
 

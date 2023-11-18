@@ -27,7 +27,7 @@ ChiSquared(df, multiplier = 1)
 
 \item{...}{further optional arguments}
 
-\item{object}{object of class \code{Binomial}}
+\item{object}{object of class \code{ChiSquared}}
 
 \item{nsim}{number of simulation runs}
 
@@ -42,10 +42,6 @@ response rates. The null hypothesis is
 alternative is that there exists a pair of groups with differing rates.
 \code{ZSquared} implements the square of a normally distributed random variable
 with mean \eqn{\mu} and standard deviation \eqn{\sigma^2}.
-}
-\details{
-Note that \code{simulate} for class \code{ChiSquared} simulates the
-   normal approximation of the test statistic.
 }
 \examples{
 datadist <- ChiSquared(df=4)

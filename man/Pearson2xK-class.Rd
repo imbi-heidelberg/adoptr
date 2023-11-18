@@ -20,7 +20,7 @@ get_tau_Pearson2xK(p_vector)
 When we test for homogeneity of rates in a k-armed trial with binary endpoints, the test statistic is
 chi-squared distributed with \eqn{k-1} degrees of freedom under the null. Under the alternative, the statistic is chi-squared distributed with a
 non-centrality parameter \eqn{\lambda}. The function \code{get_tau_Pearson2xk} then computes \eqn{\tau}, such that \eqn{\lambda} is given
-as \eqn{n/k \cdot \tau}, where \eqn{n} is the number of subjects per group. In \code{adoptr}, \eqn{\tau} is used in the same way as \eqn{\theta}
+as \eqn{n \cdot \tau}, where \eqn{n} is the number of subjects per group. In \code{adoptr}, \eqn{\tau} is used in the same way as \eqn{\theta}
 in the case of the normally distributed test statistic.
 }
 \examples{

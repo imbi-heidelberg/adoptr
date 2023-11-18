@@ -39,7 +39,7 @@ test_that('constructors work', {
     )
 })
 
-test_that('thetas are correctly computed', {
+test_that('thetas and ncps are correctly computed', {
 
     # theoretical ncp and calculated ncp are equal
     # Pearson2xK

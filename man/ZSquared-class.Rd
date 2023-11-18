@@ -12,7 +12,7 @@ ZSquared(two_armed = TRUE)
 get_tau_ZSquared(mu, sigma = 1)
 }
 \arguments{
-\item{two_armed}{logical indicating if a two-aremd trial is regarded}
+\item{two_armed}{logical indicating if a two-armed trial is regarded}
 
 \item{mu}{mean of Z}
 
@@ -23,6 +23,7 @@ Implementation of \eqn{Z^2}, where \eqn{Z} is normally distributed with mean \eq
 \eqn{\sigma^2}. \eqn{Z^2} is chi-squared distributed with \eqn{1} degree of freedom and non-centrality parameter \eqn{(\mu/\sigma)^2}.
 The function \code{get_tau_ZSquared} computes the factor \eqn{\tau=(\mu/\sigma)^2}, such that
 \eqn{\tau} is the equivalent of \eqn{\theta} in the normally distributed case.
+The square of a normal distribution \eqn{Z^2} can be used for two-sided hypothesis testing.
 }
 \examples{
 zsquared <- ZSquared(FALSE)

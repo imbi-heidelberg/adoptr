@@ -19,7 +19,7 @@
 #' @exportClass NestedModels
 setClass("NestedModels", representation(
     p_inner  = "numeric",
-    p_outer =  "numeric"),
+    p_outer  =  "numeric"),
     contains = "DataDistribution")
 
 
@@ -73,6 +73,8 @@ NestedModels <- function(p_inner, p_outer) {
 #' @rdname ANOVA-class
 #' @export
 ANOVA <- function(n_groups) {
+    if (n_groups < 0 || abs(n_groups - round(n_groups)) > sqrt(.Machine$double.eps))
+        stop("The number of groups must be a natural number.")
     new("ANOVA", p_outer = n_groups, p_inner = 1L)
 }
 
@@ -158,7 +160,7 @@ setMethod("simulate", signature("NestedModels", "numeric"),
 
 setMethod("print", signature('NestedModels'), function(x, ...) {
     glue::glue(
-        "{class(x)[1]}<p_inner={x@p_inner}, p_outer={x@p_outer}>"
+        "{class(x)[1]}<p_inner={x@p_inner},p_outer={x@p_outer}>"
     )
 })
 

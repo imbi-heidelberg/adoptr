@@ -48,12 +48,6 @@ If the distribution is \code{\link{Binomial}},
   Then, the mean is assumed to be
   \ifelse{html}{\out{&radic; n  theta}}{\eqn{\sqrt{n} theta}}.
 
-If the distribution is \code{\link{Binomial}},
-  \ifelse{html}{\out{theta}}{\eqn{theta}} denotes the rate difference between
-  intervention and control group.
-  Then, the mean is assumed to be
-  \ifelse{html}{\out{&radic; n  theta}}{\eqn{\sqrt{n} theta}}.
-
 If the distribution is \code{\link{Normal}}, then
   the mean is assumed to be
   \ifelse{html}{\out{&radic; n  theta}}{\eqn{\sqrt{n} theta}}.
@@ -61,11 +55,11 @@ If the distribution is \code{\link{Normal}}, then
 \examples{
 cumulative_distribution_function(Binomial(.1, TRUE), 1, 50, .3)
 
-cumulative_distribution_function(Pearson2xK(3),1,30,get_tau_Pearson2xK(c(0.3,0.4,0.7,0.2)))
-cumulative_distribution_function(ZSquared(4),1,35,get_tau_ZSquared(0.4))
+cumulative_distribution_function(Pearson2xK(3), 1, 30, get_tau_Pearson2xK(c(0.3,0.4,0.7,0.2)))
+cumulative_distribution_function(ZSquared(4), 1, 35, get_tau_ZSquared(0.4))
 
 
-cumulative_distribution_function(Binomial(.1, TRUE), 1, 50, .3)
+probability_density_function(ANOVA(3), 1, 30, get_tau_ANOVA(c(0.3, 0.4, 0.7, 0.2)))
 
 cumulative_distribution_function(Normal(), 1, 50, .3)
 

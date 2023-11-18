@@ -4,9 +4,15 @@
 \name{NestedModels-class}
 \alias{NestedModels-class}
 \alias{NestedModels}
+\alias{quantile,NestedModels-method}
+\alias{simulate,NestedModels,numeric-method}
 \title{F-Distribution}
 \usage{
 NestedModels(p_inner, p_outer)
+
+\S4method{quantile}{NestedModels}(x, probs, n, theta, ...)
+
+\S4method{simulate}{NestedModels,numeric}(object, nsim, n, theta, seed = NULL, ...)
 }
 \arguments{
 \item{p_inner}{number of independent variables in smaller model}
@@ -20,6 +26,12 @@ NestedModels(p_inner, p_outer)
 \item{theta}{distribution parameter}
 
 \item{...}{further optional arguments}
+
+\item{object}{object of class \code{NestedModels}}
+
+\item{nsim}{number of simulation runs}
+
+\item{seed}{random seed}
 }
 \description{
 Implements the F-distribution used for an ANOVA or for the comparison of the fit of two

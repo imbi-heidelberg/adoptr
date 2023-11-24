@@ -2,21 +2,21 @@
   "index_name": "adoptr",
   "start_urls": [
     {
-      "url": "https://kkmann.github.io/adoptr/index.html",
+      "url": "https://imbi-heidelberg.github.io/adoptr/index.html",
       "selectors_key": "homepage",
       "tags": [
         "homepage"
       ]
     },
     {
-      "url": "https://kkmann.github.io/adoptr/reference",
+      "url": "https://imbi-heidelberg.github.io/adoptr/reference",
       "selectors_key": "reference",
       "tags": [
         "reference"
       ]
     },
     {
-      "url": "https://kkmann.github.io/adoptr/articles",
+      "url": "https://imbi-heidelberg.github.io/adoptr/articles",
       "selectors_key": "articles",
       "tags": [
         "articles"
@@ -30,7 +30,7 @@
     "/articles/index.html"
   ],
   "sitemap_urls": [
-    "https://kkmann.github.io/adoptr/sitemap.xml"
+    "https://imbi-heidelberg.github.io/adoptr/sitemap.xml"
   ],
   "selectors": {
     "homepage": {

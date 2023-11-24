@@ -2,7 +2,7 @@
 title: "Designs for non-normal Endpoints with approximately normal test statistics"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Using other endpoints}
+  %\VignetteIndexEntry{Designs for non-normal Endpoints with approximately normal test statistics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -115,7 +115,9 @@ datadist <- Binomial(0.3, two_armed = TRUE)
 Let us furthermore postulate a normal prior distribution for $\theta$ with expectation $\mu=0.2$ and standard deviation $\sigma=0.2$, which was truncated to the interval $(-.29,0.69)$. It is necessary to use a truncation to ensure that $p_T \in (0,1)$.
 ```{r}
 H_0        <- PointMassPrior(.0, 1)
-prior      <- ContinuousPrior(function(x) 1/(pnorm(0.69,0.2,0.2)-pnorm(-0.29,0.2,0.2))*dnorm(x,0.2,0.2),
+prior      <- ContinuousPrior(function(x) 1 / (pnorm(0.69, 0.2, 0.2) - 
+                                                   pnorm(-0.29, 0.2, 0.2)) * 
+                                  dnorm(x, 0.2, 0.2),
                               support = c(-0.29,0.69),
                               tighten_support = TRUE)
 ```
@@ -138,7 +140,8 @@ ess <- ExpectedSampleSize(datadist,prior)
 
 init <- get_initial_design(0.2,0.025,0.2)
 
-opt_design <- minimize(ess,subject_to(toer_cnstr,epow_cnstr),initial_design = init, check_constraints = TRUE)
+opt_design <- minimize(ess,subject_to(toer_cnstr,epow_cnstr), 
+                       initial_design = init, check_constraints = TRUE)
 
 plot(opt_design$design)
 ```
@@ -320,8 +323,8 @@ hazard ratio. For our example, we assume $\theta=1$ for the null hypothesis,
 and a point alternative hypothesis of $\theta=1.7$.
 
 ```{r}
-H_0 <- PointMassPrior(1,1)
-H_1 <- PointMassPrior(1.7,1)
+H_0 <- PointMassPrior(1, 1)
+H_1 <- PointMassPrior(1.7, 1)
 ```
 
 Our desired design should have a maximal type I error $\alpha\leq 0.025$ and a minimum power of $(1-\beta)\geq 0.8$.
@@ -329,15 +332,16 @@ Our desired design should have a maximal type I error $\alpha\leq 0.025$ and a m
 ```{r}
 alpha <- 0.025
 min_power <- 0.8
-toer_con <- Power(datadist,H_0)<=alpha
-pow_con <- Power(datadist,H_1)>=min_power
+toer_con <- Power(datadist,H_0) <= alpha
+pow_con <- Power(datadist,H_1) >= min_power
 ```
 
 
 ```{r}
-exp_no_events <- ExpectedNumberOfEvents(datadist,H_1)
-init <- get_initial_design(1.7,0.025,0.2,dist=datadist)
-opt_survival <- minimize(exp_no_events,subject_to(toer_con,pow_con),initial_design = init,check_constraints=TRUE)
+exp_no_events <- ExpectedNumberOfEvents(datadist, H_1)
+init <- get_initial_design(1.7, 0.025, 0.2, dist=datadist)
+opt_survival <- minimize(exp_no_events, subject_to(toer_con,pow_con),
+                         initial_design = init, check_constraints=TRUE)
 
 summary(opt_survival$design)
 ```

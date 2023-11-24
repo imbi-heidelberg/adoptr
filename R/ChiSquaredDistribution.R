@@ -48,7 +48,7 @@ setClass("ZSquared", contains = "ChiSquared")
 #'
 #' @rdname ChiSquaredDataDistribution-class
 #' @export
-ChiSquared <- function(df, multiplier = 1) {
+ChiSquared <- function(df) {
     if (df < 0 || abs(df - round(df)) > sqrt(.Machine$double.eps))
         stop("The degrees of freedom must be natural numbers.")
     new("ChiSquared", df = df, multiplier = 1)
@@ -119,7 +119,7 @@ ZSquared <- function(two_armed = TRUE) {
 #' @param sigma standard deviation of Z
 #'
 #' @examples
-#' H1 <- PointMassPrior(get_tau_ZSquared(0.4, 1)
+#' H1 <- PointMassPrior(get_tau_ZSquared(0.4, 1))
 #'
 #' @rdname ZSquared-class
 #'

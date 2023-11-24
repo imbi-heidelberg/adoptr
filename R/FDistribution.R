@@ -112,7 +112,7 @@ setMethod("probability_density_function", signature("NestedModels", "numeric", "
 
 
 #' @examples
-#' probability_density_function(ANOVA(3), 1, 30, get_tau_ANOVA(c(0.3, 0.4, 0.7, 0.2)))
+#' cumulative_distribution_function(ANOVA(3), 1, 30, get_tau_ANOVA(c(0.3, 0.4, 0.7, 0.2)))
 #'
 #' @rdname cumulative_distribution_function
 #' @export
@@ -130,9 +130,7 @@ setMethod("cumulative_distribution_function", signature("NestedModels", "numeric
         })
 
 
-#' @param object object of class \code{NestedModels}
-#' @param nsim number of simulation runs
-#' @param seed random seed
+#' @param probs vector of probabilities
 #'
 #' @rdname NestedModels-class
 #' @export

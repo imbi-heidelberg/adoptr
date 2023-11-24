@@ -29,6 +29,6 @@ The square of a normal distribution \eqn{Z^2} can be used for two-sided hypothes
 zsquared <- ZSquared(FALSE)
 
 
-H1 <- PointMassPrior(get_tau_ZSquared(0.4, 1))
+H1 <- PointMassPrior(get_tau_ZSquared(0.4, 1), 1)
 
 }

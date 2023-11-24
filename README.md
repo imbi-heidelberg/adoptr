@@ -21,16 +21,10 @@ https://doi.org/10.1002/sim.8291
 
 ## Installation
 
-Install the latest CRAN release via
+Install the latest version directly from [GitHub](https://github.com/) with:
 
 ```r
-install.packages("adoptr")
-```
-
-and the development version directly from [GitHub](https://github.com/) with:
-
-```r
-devtools::install_github("kkmann/adoptr")
+devtools::install_github("imbi-heidelberg/adoptr")
 ```
 
 

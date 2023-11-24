@@ -122,8 +122,7 @@ The square of a normal distribution \(Z^2\) can be used for two-sided hypothesis
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">zsquared</span> <span class="op">&lt;-</span> <span class="fu">ZSquared</span><span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">H1</span> <span class="op">&lt;-</span> <span class="fu"><a href="PointMassPrior-class.html">PointMassPrior</a></span><span class="op">(</span><span class="fu">get_tau_ZSquared</span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in PointMassPrior(get_tau_ZSquared(0.4, 1)):</span> argument "mass" is missing, with no default</span>
+<span class="r-in"><span><span class="va">H1</span> <span class="op">&lt;-</span> <span class="fu"><a href="PointMassPrior-class.html">PointMassPrior</a></span><span class="op">(</span><span class="fu">get_tau_ZSquared</span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">1</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

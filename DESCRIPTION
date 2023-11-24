@@ -1,7 +1,7 @@
 Package: adoptr
 Type: Package
 Title: Adaptive Optimal Two-Stage Designs in R
-Version: 1.0.1
+Version: 1.1.0
 Authors@R: c(
         person("Kevin", "Kunzmann", 
                 role = c("aut", "cre"), 
@@ -65,5 +65,5 @@ Collate:
     'minimize.R'
     'regularization.R'
 RoxygenNote: 7.2.3
-BugReports: https://github.com/kkmann/adoptr/issues
-URL: https://github.com/kkmann/adoptr
+BugReports: https://github.com/imbi-heidelberg/adoptr/issues
+URL: https://github.com/imbi-heidelberg/adoptr

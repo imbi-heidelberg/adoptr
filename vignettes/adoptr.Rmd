@@ -231,14 +231,14 @@ In particular, **adoptr** supports:
 
 * Important predefined scores as (conditional) power or sample size functions as 
 well as a framework for constraints on scores 
-(cf. [conditional scores](https://kkmann.github.io/adoptr/articles/conditional-scores.html)).
+(cf. [conditional scores](https://imbi-heidelberg.github.io/adoptr/articles/conditional-scores.html)).
 
 * Arbitrary continuous or discrete 
-[prior distributions](https://kkmann.github.io/adoptr/articles/working-with-priors.html) 
+[prior distributions](https://imbi-heidelberg.github.io/adoptr/articles/working-with-priors.html) 
 for the single location  parameter $\theta$ of the test statistic.
 
 * Support for simple arithmetic operations on scores to quickly define weighted
-sums etc. (cf. [composite scores](https://kkmann.github.io/adoptr/articles/composite-scores.html)).
+sums etc. (cf. [composite scores](https://imbi-heidelberg.github.io/adoptr/articles/composite-scores.html)).
 
 * Relatively flexible framework for
-[defining new scores](https://kkmann.github.io/adoptr/articles/defining-new-scores.html).
+[defining new scores](https://imbi-heidelberg.github.io/adoptr/articles/defining-new-scores.html).

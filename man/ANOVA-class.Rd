@@ -34,5 +34,6 @@ H1 <- PointMassPrior(get_tau_ANOVA(c(0.4, 0.8, 0.5)), 1)
 \seealso{
 see \code{\link{probability_density_function}} and
    \code{\link{cumulative_distribution_function}} to evaluate the pdf
-   and the cdf, respectively.
+   and the cdf, respectively. Use \code{\link{NestedModels}} to get insights
+   in the implementation of \code{ANOVA}.
 }

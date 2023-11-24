@@ -1,7 +1,8 @@
 #' Adaptive Optimal Two-Stage Designs
 #'
 #' The \pkg{adoptr} package provides functionality to explore custom optimal
-#' two-stage designs for one- or two-arm superiority tests.
+#' two-stage designs for one- or two-arm superiority tests. More than two arms
+#' can be compared via chi-squared tests or ANOVA.
 #' For more details on the theoretical background see
 #' <doi:10.1002/sim.8291> and <doi:10.18637/jss.v098.i09>.
 #' \pkg{adoptr} makes heavy use of the S4 class system.
@@ -13,14 +14,14 @@
 #' @section Quickstart:
 #'
 #' For a sample workflow and a quick demo of the capabilities, see
-#' \href{https://kkmann.github.io/adoptr/articles/adoptr.html}{here}.
+#' \href{https://imbi-heidelberg.github.io/adoptr/articles/adoptr.html}{here}.
 #'
 #' A more detailed description of the background and the usage of \pkg{adoptr}
-#' can be found \href{https://kkmann.github.io/adoptr/articles/adoptr_jss.html}{here}
+#' can be found \href{https://imbi-heidelberg.github.io/adoptr/articles/adoptr_jss.html}{here}
 #' or here <doi:10.18637/jss.v098.i09> .
 #'
 #' A variety of examples is presented in the validation report hosted
-#' \href{https://kkmann.github.io/adoptr-validation-report/}{here}.
+#' \href{https://imbi-heidelberg.github.io/adoptr-validation-report/}{here}.
 #'
 #'
 #'
@@ -33,8 +34,10 @@
 #'
 #' @section Data distributions:
 #'
-#' Currently, the only implemented data distribution is \code{\link{Normal}}
-#' (one or two arms).
+#' The implemented data distributions are \code{\link{Normal}}, \code{\link{Binomial}},
+#' \code{\link{Student}}, \code{\link{Survival}}, \code{\link{ChiSquared}} (including
+#' \code{\link{Pearson2xK}} and \code{\link{ZSquared}}) and \code{\link{ANOVA}}.
+#'
 #'
 #'
 #'

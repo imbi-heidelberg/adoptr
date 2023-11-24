@@ -57,7 +57,8 @@ model <- NestedModels(2, 4)
 
 }
 \seealso{
-see \code{\link{probability_density_function}} and
+See \code{\link{probability_density_function}} and
    \code{\link{cumulative_distribution_function}} to evaluate the pdf
-   and the cdf, respectively.
+   and the cdf, respectively. Use \code{\link{ANOVA}} for detailed information
+   of ANOVA.
 }

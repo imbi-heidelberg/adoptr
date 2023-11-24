@@ -37,9 +37,10 @@ setClass("ANOVA", contains = "NestedModels")
 #' @examples
 #' model <- NestedModels(2, 4)
 #'
-#' @seealso see \code{\link{probability_density_function}} and
+#' @seealso See \code{\link{probability_density_function}} and
 #'    \code{\link{cumulative_distribution_function}} to evaluate the pdf
-#'    and the cdf, respectively.
+#'    and the cdf, respectively. Use \code{\link{ANOVA}} for detailed information
+#'    of ANOVA.
 #'
 #' @rdname NestedModels-class
 #' @export
@@ -68,7 +69,8 @@ NestedModels <- function(p_inner, p_outer) {
 #'
 #' @seealso see \code{\link{probability_density_function}} and
 #'    \code{\link{cumulative_distribution_function}} to evaluate the pdf
-#'    and the cdf, respectively.
+#'    and the cdf, respectively. Use \code{\link{NestedModels}} to get insights
+#'    in the implementation of \code{ANOVA}.
 #'
 #' @rdname ANOVA-class
 #' @export

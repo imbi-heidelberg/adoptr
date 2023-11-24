@@ -1,3 +1,13 @@
+# adoptr 1.1.0
+
+* added log-rank test for time-to-event-endpoints
+* added chi-squared distribution for contingency tables and two-sided tests
+* added f-distribution for ANOVA
+* improved get_initial_design to find better initial designs
+* added automatic constraint checks
+* bug-fix for binomial pdf/cdf
+* bug-fix in design2str function
+
 # adoptr 1.0.0
 
 * added references to article in journal of statistical software

@@ -385,6 +385,10 @@ test_that("initial design works", {
            "GroupSequentialDesign")
     )
 
+    expect_error(
+        get_initial_design(0.4, 0.2, 0.8, ce = 1, cf = 2)
+    )
+
 
     init <- get_initial_design(.4, .025, .2, "two-stage", dist = Normal(F), cf = 0.5,
                           type_c2 = "constant", ce = 2.5)

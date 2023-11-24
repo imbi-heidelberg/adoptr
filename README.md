@@ -1,12 +1,12 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2616951.svg)](https://doi.org/10.5281/zenodo.2616951)
 [![R-CMD-check](https://github.com/imbi-heidelberg/adoptr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/imbi-heidelberg/adoptr/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/kkmann/adoptr/branch/master/graph/badge.svg)](https://codecov.io/gh/kkmann/adoptr?branch=master)
+[![Codecov test coverage](https://codecov.io/gh/imbi-heidelberg/adoptr/branch/master/graph/badge.svg)](https://codecov.io/gh/imbi-heidelberg/adoptr?branch=master)
 [![CRAN status](https://www.r-pkg.org/badges/version/adoptr)](https://cran.r-project.org/package=adoptr)
 [![](http://cranlogs.r-pkg.org/badges/last-month/adoptr?color=green)](https://cran.r-project.org/package=adoptr)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/adoptr?color=green)](https://cran.r-project.org/package=adoptr)
 
 
-# adoptr <a href='https://github.com/kkmann/adoptr'><img src='man/figures/logo.png' align="right" height="139" /></a>
+# adoptr <a href='https://github.com/imbi-heidelberg/adoptr'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 
 Adaptive optimal two-stage designs for clinical trials with one or two arms. 
@@ -30,7 +30,7 @@ devtools::install_github("imbi-heidelberg/adoptr")
 
 ## Documentation
 
-The documentation is hosted at https://kkmann.github.io/adoptr.
+The documentation is hosted at https://imbi-heidelberg.github.io/adoptr.
 
 
 
@@ -38,5 +38,5 @@ The documentation is hosted at https://kkmann.github.io/adoptr.
 
 We provide an extensive validation report for **adoptr** which is implemented 
 using the **bookdown** package.
-The sources are available at https://github.com/kkmann/adoptr-validation-report and
-the last build version is hosted at https://kkmann.github.io/adoptr-validation-report.
+The sources are available at https://github.com/imbi-heidelberg/adoptr-validation-report and
+the last build version is hosted at https://imbi-heidelberg.github.io/adoptr-validation-report.

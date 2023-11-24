@@ -8,7 +8,7 @@
 \alias{simulate,ChiSquared,numeric-method}
 \title{Chi-Squared data distribution}
 \usage{
-ChiSquared(df, multiplier = 1)
+ChiSquared(df)
 
 \S4method{quantile}{ChiSquared}(x, probs, n, theta, ...)
 

@@ -21,6 +21,8 @@ NestedModels(p_inner, p_outer)
 
 \item{x}{outcome}
 
+\item{probs}{vector of probabilities}
+
 \item{n}{sample size}
 
 \item{theta}{distribution parameter}

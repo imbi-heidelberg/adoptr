@@ -64,6 +64,8 @@ The first stage efficacy boundary and the c2 boundary are chosen as Pocock-bound
 if c2 is constant or ce=c, where the null hypothesis is rejected if w1 Z1+w2 Z2>c.
 By specifying ce, it's clear that the boundaries are not Pocock-boundaries anymore, so the type I error
 constraint may not be fulfilled.
+IMPORTANT: When using the t-distribution or ANOVA, the design does probably
+not keep the type I and type II error, only approximate designs are returned.
 }
 \examples{
 init <- get_initial_design(

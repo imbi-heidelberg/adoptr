@@ -119,7 +119,7 @@ ZSquared <- function(two_armed = TRUE) {
 #' @param sigma standard deviation of Z
 #'
 #' @examples
-#' H1 <- PointMassPrior(get_tau_ZSquared(0.4, 1))
+#' H1 <- PointMassPrior(get_tau_ZSquared(0.4, 1), 1)
 #'
 #' @rdname ZSquared-class
 #'
